@@ -1,0 +1,14 @@
+---
+layout: post
+title:  "Speaking at cf.Objective(), UBTech, but, alas, No Open CF Summit"
+date:   2012-02-09 11:46:00 -0500
+categories: ColdFusion Conferences
+---
+
+It looks like it'll be another busy Spring for conference presentations for me this year.
+
+I'm honored to have been selected to speak at [cf.Objective()](http://www.cfobjective.com/) this year. I've always enjoyed the conference, and found the speakers to be high-quality and the actionable information I take away from the conference even better. I'll be talking about [making high-performance caching easy with ColdFusion](http://www.cfobjective.com/sessions/making-high-performance-caching-easy-with-coldfusion/). The session focuses on using Ehcache (or any memory-based cache) to significantly improve application performance by caching the right data for your application's use. This is another iteration of the presentation I gave at NCDevCon and the CF Unconference at Adobe MAX last year, but with the guidance of the excellent conference advisory board for cf.Objective(), I've added some key points I had previously missed.
+
+I'll also be speaking at [UBTech](http://www.ubtechconference.com/) on a different topic in a different field. In the past year, I've given the "Unleash Your Inner Spielberg" talk at a number of conferences and to different groups across the country. I've really enjoyed doing this talk, and it's evolved a lot a long the way. The team from UBTech called me up late last year to let me know that my session on this topic was one of the highest rated at the conference last year (formerly EduComm). They wanted me to come to this year's conference, but talk about the things I've learned while giving this talk. As such, the title for the presentation this year is "[Unleash Your Inner Spielberg When Creating Online Lectures, Part 2, The Director's Cut](http://www.ubtechconference.com/session/unleash-your-inner-spielberg-when-creating-online-lectures-part-2-directors-cut)." It's going to be challenging sifting through three hours of material to get it down to 35 minutes for the UBTech presentation, but relentless editing is a very good challenge to face once in a while.
+
+I'm a bit disappointed that I won't be able to make it to the [Open CF Summit](http://opencfsummit.org/) this year. It's a really interesting conference, and they've lined up some very interesting speakers and partners. The sessions are really geared to hands-on, practical integration solutions between CFML and lots of different services and environments. It's also incredibly affordable, at $72 for registration. Maybe next year!
