@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Basic Setup Needed to Access AWS from CFML"
-date:   2018-05-11 13:17:00 -0400
+date:   2018-05-21 08:46:00 -0400
 categories: AWS ColdFusion
 ---
 

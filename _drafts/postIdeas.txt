@@ -1,0 +1,9 @@
+Example of using the SDK directly for Transcribe:
+
+https://stackoverflow.com/questions/50382666/trouble-trying-to-use-amazon-transcribe-with-coldfusion-using-java-sdk
+
+
+
+Example of external activity in Step Functions workflow
+
+https://docs.aws.amazon.com/step-functions/latest/dg/tutorial-creating-activity-state-machine.html
