@@ -1,7 +1,7 @@
 ---
 layout: post
-title:  "Using Simple Storage Service in CFML"
-date:   2018-05-18 13:17:00 -0400
+title:  "Using Simple Storage Service (S3) in CFML"
+date:   2018-05-21 13:17:00 -0400
 categories: AWS ColdFusion
 ---
 
@@ -28,7 +28,7 @@ Essentially, all of the file-related CFML tags and functions support using S3 as
 
 {% highlight javascript %}
 <cffile action="read" file="s3://testbucket/test.txt" variable="data"/>
-{ %  % }
+{% endhighlight %}
 
 It's drop-dead simple.
 
@@ -50,8 +50,7 @@ s3://accessKey:secretKey@[ absolute-path to the file on S3 ]
 For example:
 
 {% highlight javascript %}
-<cffile action=“read”
-file=“s3://accessKey:secretKey@somebucket/somefile.txt” variable=“fileData” />
+<cffile action=“read” file=“s3://accessKey:secretKey@somebucket/somefile.txt” variable=“fileData” />
 {% endhighlight %}
 
 You may have noticed that I used the word "bucket" in the last two cffile examples. Buckets are root locations for files in S3. Buckets are like FTP sites, and you put files into buckets. CFML cannot create buckets for you. You need to do that in the [AWS Console](https://console.aws.amazon.com/console/home), via the [AWS command line tools](https://aws.amazon.com/cli/), or via the AWS Java SDK.
@@ -80,7 +79,7 @@ Next, Adobe ColdFusion does not support file operations for the cfpdf tag (and r
 
 It's important to recognize that every time you perform a file operation with S3 from within your CFML application, you have to go across the wire to S3 to get the file. If you're running your CFML application in AWS on an [EC2 instance](https://aws.amazon.com/ec2/) (or an [ECS](https://aws.amazon.com/ecs/) or [EKS](https://aws.amazon.com/eks/) container), you don't have to go far. If your CFML application is running in a data center outside of AWS, you have to go across the Internet to get the file. This means that some operations &mdash; like looping through a 2GB .csv file &mdash; are going to incur major overhead. S3 is generally very fast, but you need to keep the overhead of running over the Internet to grab files in mind.
 
-Finally, S3 is file storage, not a file system. You cannot perform traditional file system commands on objects in S3. You can get basic information about files in S3 by running the follwing:
+Finally, S3 is file storage, not a file system. You cannot perform traditional file system commands on objects in S3. You can get basic information about files in S3 by running the following:
 
 {% highlight javascript %}
 cfhttp( url="http://bucket.s3.amazonaws.com/path/to/file", method="head" );
