@@ -32,12 +32,14 @@ Essentially, all of the file-related CFML tags and functions support using S3 as
 
 It's drop-dead simple.
 
-As with all things AWS, you do need to provide credentials to AWS to access S3. You have two options to do this.
+You can use nearly all the file-related tags and functions with S3 by referencing s3://yourBucket/ in the file path.
+
+As with all things AWS, you need to provide credentials to AWS to access S3. You have two options to do this.
 
 1. In application.cfc, provide your IAM user account accessKey and secretKey as this.s3.accessKey and this.s3.secretKey.
 2. Provide the credentials inline on each call to S3.
 
-For greatest flexibility and control, the second option is generally preferred. If you go the application.cfc route, all calls to S3 will use the same IAM user. If you pass the credentials inline, you have great control over what call has what permissions. This allows for much better security, particularly as your application grows more complex over time.
+For the greatest flexibility and control, the second option is generally preferred. If you put the accessKey and secretKey in application.cfc, all calls to S3 in that application will use the same IAM user. If you pass the credentials inline, you have great control over what call has what permissions. This allows for much better security, particularly as your application grows more complex over time.
 
 To pass the credentials inline, you specify them as follows:
 
@@ -60,11 +62,11 @@ To see the details of native CFML support for S3, take a look at the Adobe ColdF
 
 ### Security and Control with S3
 
-S3, like most AWS services, provides a pretty amazing level of control through IAM. The ColdFusion documentation linked above explains how you can set access policies on files using native S3 support in CFML. There are security and control features for accessing content in S3 that work outside of IAM, however.
+S3, like most AWS services, provides a pretty amazing level of control through IAM. The ColdFusion documentation linked above explains how you can set access policies on files using native S3 support in CFML. CFML controls access to S3 folders and files within a S3 bucket via simple ACLs (access control lists). You can achive much finer-grained control via IAM. There are security and control features for accessing content in S3 that work outside of IAM, however.
 
-You can generate URLs pointing to files on S3 that expire after a specific date/time. You can rename files on the fly, so that you can store them with random hashes as file names for better security. You can restrict requests to files to specific IP address ranges. You can even upload files directly to S3 from a Web browser.
+You can make it so that only requests from your application can access the files on S3. You can generate URLs pointing to files on S3 that expire after a specific date/time. You can rename files on the fly, so that you can store them with random hashes as file names for better security. You can restrict requests to files to specific IP address ranges. You can even upload files directly to S3 from a Web browser.
 
-All of these features require that you sign your requests with a HMAC-encoded version of the request and a set of IAM credentials, and then pass that signature in the HTTP call to S3.
+All of these features require that you sign your requests with a HMAC-encoded version of the request and a set of IAM credentials, and then pass that signature in a HTTP call to S3.
 
 This isn't a straightforward process, so I built a [S3 Request Signing utility component](https://github.com/brianklaas/ctlS3utils) and made it availble on GitHub. This utility component supports expiring URLs, changing the file name on the fly, specifying if the file should be accessed inline or as an attachment, and specifying the MIME-type of the file on a per-request basis.
 
@@ -72,7 +74,7 @@ This isn't a straightforward process, so I built a [S3 Request Signing utility c
 
 Native CFML implementations of S3 use an older method of passing your credentials (signing requests) to S3. Both Adobe ColdFusion and Lucee use the Version 2 of the [AWS request signature](https://docs.aws.amazon.com/general/latest/gr/signing_aws_api_requests.html). AWS currently uses (and encourages the use of) Version 4 of the request signature. This is handled automatically for you when you use the AWS Java SDK.
 
-All regions created after January 30, 2014 require that you sign requests with the Version 4 signature. This means that you cannot use the native CFML S3 functionality in these regions (which include Paris, Seoul, China, Ohio, among others). If you need to work in these regions, you will need to use the AWS Java SDK to work with S3.
+All regions created after January 30, 2014 require that you sign requests with the Version 4 signature. This means that you cannot use the native CFML S3 functionality in these regions (which include Paris, Seoul, China, and Ohio, among others). If you need to work in these AWS regions, you will need to use the AWS Java SDK to work with S3. (The AWS Java SDK also allows you to break huge, multi-gigabyte or terrabyte files into chunks and upload those chunks in parallel to S3 to speed file transfer. S3 knows how to reassemble those chunks into a single whole when all the parts have transferred.)
 
 Next, Adobe ColdFusion does not support file operations for the cfpdf tag (and related functions) on S3. You'll need to pull those files off S3 to a local ColdFusion server, run the cfpdf commands locally, and then put the results back up on S3. Additionally, you cannot rename files from within CFML. You have to delete the current file and post a new copy with the new name. (This isn't a limitation of CFML. It's just how S3 works. There is no file rename command in S3.)
 
