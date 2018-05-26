@@ -1,11 +1,11 @@
 ---
 layout: post
 title:  "Using Simple Storage Service (S3) in CFML: Security, Control, and Caveats"
-date:   2018-05-29 13:17:00 -0400
+date:   2018-05-26 13:30:00 -0400
 categories: AWS ColdFusion
 ---
 
-This is the second of two posts about working with Simple Storage Service (S3) in CFML. In the last post, we looked at the basics of S3 and how simple it is to use S3 using native CMFL support.
+This is the second of two posts about working with AWS Simple Storage Service (S3) in CFML. In the last post, we looked at the basics of S3 and how simple it is to use S3 with native CMFL support.
 
 ### Security and Control with S3
 
@@ -15,13 +15,13 @@ You can make it so that only requests from your application can access the files
 
 All of these features require that you sign your requests with a HMAC-encoded version of the request and a set of IAM credentials, and then pass that signature in a HTTP call to S3.
 
-This isn't a straightforward process, so I built a [S3 Request Signing utility component](https://github.com/brianklaas/ctlS3utils) and made it availble on GitHub. This utility component supports expiring URLs, changing the file name on the fly, specifying if the file should be accessed inline or as an attachment, and specifying the MIME-type of the file on a per-request basis.
+This isn't a straightforward process, so I built a [S3 Request Signing utility component](https://github.com/brianklaas/ctlS3utils) and made it availble on GitHub. This utility component supports expiring URLs, changing the file name on the fly, specifying if the file should be accessed inline or as an attachment, and specifying the MIME-type of the file on a per-request basis. If you'd like it to do more, feel free to submit a pull request!
 
 ### Caveats on Working with CFML's Native S3 Support
 
 Native CFML implementations of S3 use an older method of passing your credentials (signing requests) to S3. Both Adobe ColdFusion and Lucee use the Version 2 of the [AWS request signature](https://docs.aws.amazon.com/general/latest/gr/signing_aws_api_requests.html). AWS currently uses (and encourages the use of) Version 4 of the request signature. This is handled automatically for you when you use the AWS Java SDK.
 
-All regions created after January 30, 2014 require that you sign requests with the Version 4 signature. This means that you cannot use the native CFML S3 functionality in these regions (which include Paris, Seoul, China, and Ohio, among others). If you need to work in these AWS regions, you will need to use the AWS Java SDK to work with S3. (The AWS Java SDK also allows you to break huge, multi-gigabyte or terrabyte files into chunks and upload those chunks in parallel to S3 to speed file transfer. S3 knows how to reassemble those chunks into a single whole when all the parts have transferred.)
+All regions created after January 30, 2014 require that you sign requests with the Version 4 signature. This means that you cannot use the native CFML S3 functionality in these regions (which include Paris, Seoul, China, and Ohio, among others). If you need to work in these [AWS regions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html) (not geographic regions!), you will need to use the AWS Java SDK to work with S3. (The AWS Java SDK also allows you to break huge, multi-gigabyte or terrabyte files into chunks and upload those chunks in parallel to S3 to speed file transfer. S3 knows how to reassemble those chunks into a single whole when all the parts have transferred.)
 
 Next, Adobe ColdFusion does not support file operations for the cfpdf tag (and related functions) on S3. You'll need to pull those files off S3 to a local ColdFusion server, run the cfpdf commands locally, and then put the results back up on S3. Additionally, you cannot rename files from within CFML. You have to delete the current file and post a new copy with the new name. (This isn't a limitation of CFML. It's just how S3 works. There is no file rename command in S3.)
 
