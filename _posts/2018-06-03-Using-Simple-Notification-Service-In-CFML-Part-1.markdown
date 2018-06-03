@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Using Simple Notification Service (SNS) in CFML: Overview and Connecting to SNS"
-date:   2018-05-30 13:18:00 -0400
+date:   2018-06-03 09:01:00 -0400
 categories: AWS ColdFusion
 ---
 
@@ -11,13 +11,13 @@ If you haven't already read the entry on [the basic setup needed to access AWS f
 
 ### What Can Simple Notification Service (SNS) Do for You?
 
-SNS is a simple [publish/subscribe](https://en.wikipedia.org/wiki/Publish–subscribe_pattern) service. Clients subscribe to a SNS topic, and when a message is published to that topic, all subscribers are notififed with a copy of the message. Publishers have no idea who is receiving the message, as clients of different types can subscribe to the topic. You can send emails, text messages, or native push notifications via SNS. 
+SNS is a simple [publish/subscribe](https://en.wikipedia.org/wiki/Publish–subscribe_pattern) service. Clients subscribe to a SNS topic, and when a message is published to that topic, all subscribers are notififed with a copy of the message. Publishers have no idea who is receiving the message, as clients of different types can subscribe to the topic. This ensures good decoupling between the publisher and the subscriber, which is good architectural practice. You can send emails, text messages, or native push notifications via SNS. 
 
 Some examples of using SNS are:
 
 - Send an email to a subscriber when files are uploaded into a S3 bucket that exceed your file size limits.
 - Send a verification code text message as part of two-factor authentication during login to your application.
-- Publishing notifications to one or more [SQS (Simple Queue Service)](https://aws.amazon.com/sqs/) queues, from which individual messages would be picked up and processed by connected worker clients/applications.
+- Publishing notifications to one or more [SQS (Simple Queue Service)](https://aws.amazon.com/sqs/) queues, from which individual messages can be picked up and processed by connected worker clients/applications.
 - Pushing a message to a [server endpoint (URL)](https://docs.aws.amazon.com/sns/latest/dg/SendMessageToHttp.html) in a CFML application to trigger or process work based on the content of the message.
 - Pushing a message to a subscriber [Lambda](https://aws.amazon.com/lambda/) function for processing the message's contents.
 - Send a message to SNS when one of your [EC2](https://aws.amazon.com/ec2/) instances gets shut down unexpectedly.
