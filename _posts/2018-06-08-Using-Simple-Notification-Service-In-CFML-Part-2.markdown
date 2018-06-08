@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Using Simple Notification Service (SNS) in CFML: Creating Topics"
-date:   2018-06-05 13:18:00 -0400
+date:   2018-06-08 10:47:00 -0400
 categories: AWS ColdFusion
 ---
 
@@ -23,8 +23,8 @@ We're working directly with Java here, so everything is an object. CFML fortunat
 
 Following the pattern above, in order to create a new topic, we:
 
-1. Make a connection to SNS with a SNS client.
-2. Create a CreateTopicRequest object.
+1. Make a connection to SNS with a [SNS client](/aws/coldfusion/2018/06/03/Using-Simple-Notification-Service-In-CFML-Part-1.html).
+2. Create a CreateTopicRequest object. (This is, literally, the request to create a new topic.)
 3. Use the CreateTopicRequest's fluent "with" interface to set the name of the topic.
 4. Tell the SNS client to createTopic() using the CreateTopicRequest.
 5. Get back a createTopicResult.
@@ -51,7 +51,7 @@ Breaking this down:
 - Remember that we use the AWSPlaybox/model/awsServiceFactory.cfc to make the actual client connection to SNS, passing in our credentials during instantitation of the awsServiceFactory.cfc object.
 - Every topic has to have a name that's unique to your AWS account. Here we append the current date/time to make the topic name unqique.
 - Most request/result objects in the AWS Java SDK have a fluent interface. That is, you can create an object and chain together the setting of the properties of that object. Here we set the name of our new topic with the withName() function.
-- We tell the SNS client connection to create the topic, and we get a CreateTopicResult back.
+- We tell the SNS client connection to create the topic, and we get a CreateTopicResult object back.
 - The CreateTopicResult object contains the unique ARN of our new topic. We need this ARN to make future requests to this topic.
 
 We're storing the new topic ARN in the application scope in the AWSPlaybox app. You'd want to store this in a database in a production app that uses SNS.
