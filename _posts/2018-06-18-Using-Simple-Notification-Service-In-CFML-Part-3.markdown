@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Using Simple Notification Service (SNS) in CFML: Subscribing to Topics"
-date:   2018-06-07 13:18:00 -0400
+date:   2018-06-18 09:53:00 -0400
 categories: AWS ColdFusion
 ---
 
@@ -34,7 +34,7 @@ Breaking this down:
 - A subscribe request requires that you pass in three parameters:
   1. The ARN of the topic you want to subscribe to.
   2. The Protocol that you will use for the subscription. This can be SMS, email, or http/s, among others. The [full listing of protocol and endpoint options](https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/sns/model/SubscribeRequest.html) is in the docs.
-  3. The Endpoint for the subscription. This is the email address or phone number (among others) you want to use to subscribe.
+  3. The Endpoint for the subscription. This is the email address or phone number (among other options) you want to use to subscribe.
 - In this case, we tell the SNS client to subcribe but don't ask for a SubscribeResult back. If we wanted to manage this individual subscription programatically in the future, we'd need to get the ARN of the individual subscription and store that in a database:
 
 {% highlight javascript %}
