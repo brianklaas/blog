@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Using Simple Notification Service (SNS) in CFML: Sending Messages"
-date:   2018-06-09 13:18:00 -0400
+date:   2018-07-08 18:34:00 -0400
 categories: AWS ColdFusion
 ---
 
