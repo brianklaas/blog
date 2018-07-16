@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Using Simple Notification Service (SNS) in CFML: Caveats About Working with SNS in CMFL"
-date:   2018-06-11 13:18:00 -0400
+date:   2018-07-16 13:08:00 -0400
 categories: AWS ColdFusion
 ---
 
