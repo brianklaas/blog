@@ -51,4 +51,4 @@ serviceObject = CreateObject('java', 'com.amazonaws.services.rekognition.AmazonR
 
 Now we can work with Rekognition from within our CFML application. 
 
-In the rest of this series of posts on working with Rekognition from CFML, I'll cover detecting and processing labels, comparing faces to one another to look for matches, and detecting text in an image.
+In the rest of this series of posts on working with Rekognition from CFML, I'll cover detecting and processing image labels, performing face sentiment analysis, comparing faces to one another to look for matches, and detecting text in an image.
