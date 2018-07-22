@@ -51,7 +51,7 @@ Later in /rekognition.cfm, we randomly select one of those images from the array
 case 'detectLabels':
 	sourceImage = s3images.imagesForLabels[randRange(1, arrayLen(s3images.imagesForLabels))];
 	getImageLabelsResult = rekognitionLib.getImageLabels(s3images.awsBucketName, sourceImage);
-break;
+	break;
 {% endhighlight %}
 
 So now we hop over to rekognitionLib.cfc, where the real work happens. If you read through getImageLabels(), you'll see the eight steps listed above translated into code:
