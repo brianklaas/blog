@@ -15,7 +15,7 @@ Following the usual "make a request object, get a result object back" pattern in
 3. Create an "Image" object in the Rekognition service to work with.
 4. Create a "S3Object" object that specifies the path to the image on S3 that you want to treat as the image for the Image object created in step 3.
 5. Set the S3Object into the Image object.
-6. Set the Image object into the DetectLabDetectFacesRequestelsRequest.
+6. Set the Image object into the DetectFacesRequest.
 7. Run the DetectFacesRequest.
 8. Get back a DetectFacesResult object.
 
@@ -27,13 +27,13 @@ Here's how we do this in the [AWSPlaybox app](https://github.com/brianklaas/awsP
 
 > If you haven't already read the entry on [the basic setup needed to access AWS from CFML](/aws/coldfusion/2018/05/21/Basic-Setup-Needed-To-Access-AWS-From-CFML.html), please do so now.
 
-As in the example of detecting labels in an image, we're going to start the process in /rekognition.cfm by providing a list of paths to images already in S3 that we can randomly choose from:
+As in the example of detecting labels in an image, we're going to start the process in /rekognition.cfm by providing a list of paths to images already in S3 from which we can randomly choose:
 
 {% highlight javascript %}
 <cfset s3images.facesForMatching = [ "images/bk-imageOne.png", "images/bk-imageTwo.jpg", "images/jk-imageOne.jpg", "images/jk-imageTwo.jpg", "images/bk-imageThree.jpg", "images/bk-imageFour.jpg" "images/jk-imageThree.jpg","images/ak-imageOne.jpg","images/ak-imageTwo.jpg"] />
 {% endhighlight %}
 
-As before, This is just an array of paths to files on S3, nothing more. The files just need to already be on S3. The code in the AWSPlaybox app does not load them up there for you.
+As before, this is just an array of paths to files on S3, nothing more. The files just need to already be on S3. The code in the AWSPlaybox app does not load them up there for you.
 
 Later in /rekognition.cfm, we randomly select one of those images from the array and run detectSentiment() on that image. We pass in the name of the S3 bucket where the images can be found, and the string value of the path to the randomly selected image.
 
