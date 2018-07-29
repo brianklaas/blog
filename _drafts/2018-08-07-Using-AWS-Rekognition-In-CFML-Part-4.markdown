@@ -8,6 +8,8 @@ Rekognition has the ability to compare two images of a person and determine if t
 
 The core use case for this feature is security. This feature of Rekognition is used to perform real-time facial analysis of someone standing at a door, looking into a camera, and matching that face with an image on record. My team is using this feature to match a student's picture in their official University ID with their face being captured in real-time on a webcam to authorize a student to take an online exam.
 
+> In a widely covered story, the ACLU did a test of Rekognition [matching mugshots to members of Congress](https://www.aclu.org/blog/privacy-technology/surveillance-technologies/amazons-face-recognition-falsely-matched-28). That test falsely matched 28 members of congress, primary people of color, to mugshots of criminals. [Amazon's response to this test](https://aws.amazon.com/blogs/aws/thoughts-on-machine-learning-accuracy/) is worth reading. 
+
 Following the usual "make a request object, get a result object back" pattern in the AWS Java SDK, here's an outline of how you perform face matching in Rekognition:
 
 1. Get a copy of [the Rekognition client we created in the first part of this series](/aws/coldfusion/2018/07/23/Using-AWS-Rekognition-In-CFML-Part-1.html).

@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Using AWS Rekognition in CFML: Detecting and Processing the Content of an Image"
-date:   2018-07-28 09:01:00 -0400
+date:   2018-07-29 13:35:00 -0400
 categories: AWS ColdFusion
 ---
 The most obvious use case for Rekognition is detecting the objects, locations, or activities of an image. This functionality returns a list of "labels." Labels can be things like "beach" or "car" or "dog." This allows you to build tools like image search.
@@ -81,9 +81,9 @@ So now we have a DetectLabelsResult object (called labelsRequestResult) that con
 
 ## Processing the Image Labels Array
 
-The detectLabels function in Rekognition returns an array of objects (because this is Java) of the type [com.amazonaws.services.rekognition.model.Label](https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/rekognition/model/Label.html). This object  only contains two properties that are of use to us: the label name and the level of confidence that Rekognition has that this is an accurate, valid label for this image.
+The detectLabels function in Rekognition returns an array of objects (because this is Java) of the type [com.amazonaws.services.rekognition.model.Label](https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/rekognition/model/Label.html). This object  only contains two properties that are of use to us: the label name and the level of confidence Rekognition has that this is an accurate, valid label for this image.
 
-> The DetectLabelsRequest object has a property named minConfidence. You could run DetectLabelsRequest.setMinConfidence() and pass in a number to say to Rekognition "Don't bother to return any labels where you have less than X% confidence that the label is correct for this image." For example, if you run DetectLabelsRequest.setMinConfidence(70), Rekognition will only return labels where it has 70% confidence that the label is correct for the image. This is a really useful way to limit the results from the DetectLabelsRequest. If Rekognition is only 30% confident that a label is correct for a given image, why would you want that label in your result set?
+> The DetectLabelsRequest object has a property named minConfidence. You could run DetectLabelsRequest.setMinConfidence() and pass in a number to say to Rekognition "Don't bother to return any labels where you have less than X% confidence that the label is correct for this image." For example, if you run DetectLabelsRequest.setMinConfidence(70), Rekognition will only return labels where it has 70% or more confidence that the label is correct for the image. This is a really useful way to limit the results from the DetectLabelsRequest. If Rekognition is only 30% confident that a label is correct for a given image, why would you want that label in your result set?
 
 In order to process the image labels array, we simply loop over the array and pull out the label and level of confidence for each item in the array. Here's the code in rekognitionLib.getImageLabels():
 
@@ -98,7 +98,7 @@ labelsArray.each(function(thisLabelObj, index) {
 });
 {% endhighlight %}
 
-Note that we're using the 'each' member function of arrays in CFML instead of doing a traditional CFML for loop. The code is just transforming the Label object into a simple structure for display back on the /rekognition.cfm view.
+Note that we're using the 'each' member function of arrays in CFML instead of doing a traditional CFML for loop. The code is just transforming each Label object into a simple structure for display back on the /rekognition.cfm view.
 
 ## Displaying the Results
 
@@ -114,10 +114,10 @@ Here's an example result set:
 
 <img src="/assets/postImages/rekogResultsGiraffe.png" align="center" width="600" height="358" border="1" alt="Sample result set from Rekognition's detect labels function" />
 
-That's me feeding a giraffe at [the San Diego Zoo Safari Park](http://www.sdzsafaripark.org). As you can see, Rekognition gets the basics correct. There is an animal, a giraffe, which is a mammal. There's wildlife, people, a human, a person. There is Arecaceae (the palm family), and palm trees. I am outdoors, and there is sand, even though those received much lower confidence levels than some of the other labels. There is no bench, though. Rekognition thought the wood fence around the truck bed was a bench, which kind of makes sense when you realize that benches often have parallel pieces of wood as the back. There were many more results returned from the DetectLabelsRequest. I just cut them off in the screenshot.
+That's me feeding a giraffe at [the San Diego Zoo Safari Park](http://www.sdzsafaripark.org). As you can see, Rekognition gets the basics correct. There is an animal, a giraffe, which is a mammal. There's wildlife, people, a human, a person. There is Arecaceae (the palm family), and palm trees. I am outdoors, and there is sand, even though those received much lower confidence levels than some of the other labels. There is no bench, though. Rekognition thought the wood fence around the truck bed in which I stood was a bench, which kind of makes sense when you realize that benches often have parallel pieces of wood as the back. There were many more results returned from the DetectLabelsRequest. I just cut them off in the screenshot.
 
 In this example, we displayed labels on screen. In an image search application, you'd store the labels in a database and then build a front end to search against those labels. You could run Rekognition searches against a set of images in real-time, but that's going to be a whole lot slower than querying existing label results in your database. 
 
 You could also use the Async version of the AWS Rekognition client (com.amazonaws.services.rekognition.AmazonRekognitionAsyncClientBuilder), which returns [Java Futures](https://dzone.com/articles/javautilconcurrentfuture) for each method. Now that [Adobe ColdFusion 2018 has support for aynschronous programming via Java Futures](https://coldfusion.adobe.com/2018/07/asynchronous-programming-in-coldfusion-2018-release/), you could do all of your Rekognition work in an asynchronous fashion &mdash; if you're using Adobe ColdFusion 2018.
 
-So that's how you detect the objects, locations, or activities of an image using Rekognition from CFML. In the next post, I'll cover how to do sentiment analysis of faces in an image. That feature has some interesting &mdash; [and Orwellian](https://gizmodo.com/chinese-school-piloting-face-recognition-software-to-ma-1826142540) &mdash; implications.
+So that's how you use CFML to detect the objects, locations, or activities of an image using Rekognition. In the next post, I'll cover how to do sentiment analysis of faces in an image. That feature has some interesting &mdash; [and Orwellian](https://gizmodo.com/chinese-school-piloting-face-recognition-software-to-ma-1826142540) &mdash; implications.
