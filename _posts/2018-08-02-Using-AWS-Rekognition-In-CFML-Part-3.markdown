@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Using AWS Rekognition in CFML: Performing Facial Sentiment Analysis on an Image"
-date:   2018-08-01 09:01:00 -0400
+date:   2018-08-05 13:37:00 -0400
 categories: AWS ColdFusion
 ---
 Facial sentiment analysis is an interesting use case for Rekognition. This process takes an image and returns a number of pre-set attributes about the faces in that image &mdash; age range, gender, eyes open/closed, smiling/not smiling, and so on, as well as the emotions of the person in the image. While more objective measures tend to be accurate in this kind of analysis, emotion analysis is still quite subjective and, in my opinion, [prone to both error and significant bias](http://news.mit.edu/2018/study-finds-gender-skin-type-bias-artificial-intelligence-systems-0212). 
@@ -27,7 +27,7 @@ Here's how we do this in the [AWSPlaybox app](https://github.com/brianklaas/awsP
 
 > If you haven't already read the entry on [the basic setup needed to access AWS from CFML](/aws/coldfusion/2018/05/21/Basic-Setup-Needed-To-Access-AWS-From-CFML.html), please do so now.
 
-As in the example of detecting labels in an image, we're going to start the process in /rekognition.cfm by providing a list of paths to images already in S3 from which we can randomly choose:
+As in [the example of detecting labels in an image](/aws/coldfusion/2018/07/29/Using-AWS-Rekognition-In-CFML-Part-2.html), we're going to start the process in /rekognition.cfm by providing a list of paths to images already in S3 from which we can randomly choose:
 
 {% highlight javascript %}
 <cfset s3images.facesForMatching = [ "images/bk-imageOne.png", "images/bk-imageTwo.jpg", "images/jk-imageOne.jpg", "images/jk-imageTwo.jpg", "images/bk-imageThree.jpg", "images/bk-imageFour.jpg" "images/jk-imageThree.jpg","images/ak-imageOne.jpg","images/ak-imageTwo.jpg"] />
@@ -44,12 +44,12 @@ case 'detectSentiment':
 	break;
 {% endhighlight %}
 
-So now we hop over to rekognitionLib.cfc, where the real work happens. If you read through detectSentiment(), you'll see the eight steps listed above translated into code:
+Now we hop over to rekognitionLib.cfc, where the real work happens. If you read through detectSentiment(), you'll see the eight steps listed above translated into code:
 
 {% highlight javascript %}
 // 1. Get a copy of the Rekognition client
 variables.rekognitionService = application.awsServiceFactory.createServiceObject('rekognition');
-// 2. Create a "DetectLabelsRequest" object.
+// 2. Create a "DetectFacesRequest" object.
 var detectFacesRequest = CreateObject('java', 'com.amazonaws.services.rekognition.model.DetectFacesRequest').init();
 // 3. Create an "Image" object in the Rekognition service to work with.
 var imageToAnalyze = CreateObject('java', 'com.amazonaws.services.rekognition.model.Image').init();
@@ -61,7 +61,7 @@ imageOnS3.setName(arguments.pathToImage);
 imageToAnalyze.setS3Object(imageOnS3);
 // 6. Set the Image object into the DetectLabelsRequest.
 detectFacesRequest.setImage(imageToAnalyze);
-// 7. Run the DetectLabelsRequest, and 8. Get back a DetectLabelsResult object.
+// 7. Run the DetectFacesRequest, and 8. Get back a detectFacesResult object.
 var attributesArray = ["ALL"];
 detectFacesRequest.setAttributes(attributesArray);
 var detectFacesResult = variables.rekognitionService.detectFaces(detectFacesRequest);
@@ -75,7 +75,7 @@ So now we have a DetectFacesResult object (called detectFacesResult) that contai
 
 ## Processing the Sentiment of Each Face in the Image
 
-The detectFaces function in Rekognition returns an array of objects (because this is Java) of the type [com.amazonaws.services.rekognition.model.FaceDetail](https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/rekognition/model/FaceDetail.html). There will be one FaceDetail object for each face found in the image.
+As this is Java we're working with, the detectFaces function in Rekognition returns an array of objects of the type [com.amazonaws.services.rekognition.model.FaceDetail](https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/rekognition/model/FaceDetail.html). There will be one FaceDetail object for each face found in the image.
 
 The FaceDetail object contains a number of properties, most of which are represented as their own individual objects. The age range of the face is actually an AgeRange object of the type [com.amazonaws.services.rekognition.model.AgeRange](https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/rekognition/model/AgeRange.html). The has beard? property is a Beard object of the type [com.amazonaws.services.rekognition.model.Beard](https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/rekognition/model/Beard.html). This is the case for almost all the properties of the FaceDetail object, except for confidence, which is an integer value representing how confident Rekognition is that this is actually a face.
 
