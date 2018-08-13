@@ -1,14 +1,14 @@
 ---
 layout: post
 title:  "Using AWS Rekognition in CFML: Matching Faces from Two Images"
-date:   2018-08-07 09:01:00 -0400
+date:   2018-08-13 08:21:00 -0400
 categories: AWS ColdFusion
 ---
 Rekognition has the ability to compare two images of a person and determine if they are the same person based on the features of the faces in each image. Rekognition can do this even when the images are of the same person over years, or decades. Like other machine learning systems, this feature is [subject to bias and error](http://news.mit.edu/2018/study-finds-gender-skin-type-bias-artificial-intelligence-systems-0212), but in my work with the feature, it works quite well. 
 
 The core use case for this feature is security. This feature of Rekognition is used to perform real-time facial analysis of someone standing at a door, looking into a camera, and matching that face with an image on record. My team is using this feature to match a student's picture in their official University ID with their face being captured in real-time on a webcam to authorize a student to take an online exam.
 
-> In a widely covered story, the ACLU did a test of Rekognition [matching mugshots to members of Congress](https://www.aclu.org/blog/privacy-technology/surveillance-technologies/amazons-face-recognition-falsely-matched-28). That test falsely matched 28 members of congress, primary people of color, to mugshots of criminals. [Amazon's response to this test](https://aws.amazon.com/blogs/aws/thoughts-on-machine-learning-accuracy/) is worth reading. 
+> In a widely covered story, the ACLU did a test of Rekognition [matching mugshots to members of Congress](https://www.aclu.org/blog/privacy-technology/surveillance-technologies/amazons-face-recognition-falsely-matched-28). That test resulted in false matches of 28 members of congress, primary people of color, to mugshots of criminals. [Amazon's response to this test](https://aws.amazon.com/blogs/aws/thoughts-on-machine-learning-accuracy/) is worth reading. 
 
 Following the usual "make a request object, get a result object back" pattern in the AWS Java SDK, here's an outline of how you perform face matching in Rekognition:
 
@@ -20,8 +20,6 @@ Following the usual "make a request object, get a result object back" pattern in
 6. Set the Image objects into the CompareFacesRequest.
 7. Run the CompareFacesRequest.
 8. Get back a CompareFacesResult object.
-
-Again: this is Java. Everything is an object and the code is going to be a bit verbose.
 
 ## The Code to Face Match Between Two Images
 
@@ -128,7 +126,7 @@ Here's an example result:
 
 <img src="/assets/postImages/rekogFaceMatch.png" align="center" width="600" height="377" border="1" alt="Sample result set from Rekognition's face matching function" />
 
-That's a nice picture of me on vacation and a terrible picture of my terrible passport photo (in my passport) taken on my phone a couple of years later. Despite having the wavy blue lines in the target photo, and the target photo being taken at an odd angle, Rekognition was able to match the faces.
+That's a nice picture of me on vacation and a terrible picture of my picture in my passport taken on my phone a couple of years later. Despite having the wavy blue lines in the target photo, and the target photo being taken at an odd angle, Rekognition was able to match the faces.
 
 ## Caveat Emptor
 
