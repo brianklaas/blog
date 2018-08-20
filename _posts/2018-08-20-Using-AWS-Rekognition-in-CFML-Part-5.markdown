@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Using AWS Rekognition in CFML: Detecting Text in an Image"
-date:   2018-08-20 09:01:00 -0400
+date:   2018-08-20 08:48:00 -0400
 categories: AWS ColdFusion
 ---
 Text detection in an image or video stream is a really interesting &mdash; and useful &mdash; use case for Rekognition. You could use it for near real-time AR (snap a picture and detect landmarks or street signs, provide a video stream and do the same) or indexing slide text in a series of conference presentations. You could use it to "scan" business cards, receipts, or all sorts of documentation. It could be used to perform OCR (optical character recognition) on that backlog of thousands of PDFs which are just scans of documents created by your office copier.
@@ -25,20 +25,20 @@ Here's how we do this in the [AWSPlaybox app](https://github.com/brianklaas/awsP
 
 > If you haven't already read the entry on [the basic setup needed to access AWS from CFML](/aws/coldfusion/2018/05/21/Basic-Setup-Needed-To-Access-AWS-From-CFML.html), please do so now.
 
-As in the example of performing sentiment analysis on the people in an image, we're going to start the process in /rekognition.cfm by providing a list of paths to images already in S3 from wihch we can randomly choose:
+As in the example of performing sentiment analysis on the people in an image, we're going to start the process in /rekognition.cfm by providing a list of paths to images already in S3 from which we can randomly choose:
 
 {% highlight javascript %}
 <cfset s3images.imagesWithText = [ "images/rekogTextTest1.png","images/rekogTestTest2.png" ] />
 {% endhighlight %}
 
-As before, this is just an array of paths to files on S3, nothing more. The files need to already be on S3. The code in the AWSPlaybox app does not load them up there for you.
+As before, this is just an array of paths to files on S3, nothing more. The files need to already be on S3. The code in the AWSPlaybox app does not upload them for you.
 
 Later in /rekognition.cfm, we randomly select one of those images from the array and run detectText() on that image. We pass in the name of the S3 bucket where the images can be found, and the string value of the path to the randomly selected image.
 
 {% highlight javascript %}
 case 'detectText':
-	sourceImage = s3images.imagesWithText[randRange(1, arrayLen(s3images.imagesWithText))];
-	detectTextResult = rekognitionLib.detectText(s3images.awsBucketName, sourceImage);
+  sourceImage = s3images.imagesWithText[randRange(1, arrayLen(s3images.imagesWithText))];
+  detectTextResult = rekognitionLib.detectText(s3images.awsBucketName, sourceImage);
 {% endhighlight %}
 
 Now we hop over to rekognitionLib.cfc, where the real work happens. If you read through detectText(), you'll see the eight steps listed above translated into code:
@@ -64,7 +64,7 @@ var detectTextResult = variables.rekognitionService.detectText(detectTextRequest
 
 ## Processing the Results of the Detect Text Function
 
-The detectText function in Rekognition returns an array of text detection object of the type [com.amazonaws.services.rekognition.model.TextDetection](https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/rekognition/model/TextDetection.html). Unlike other result objects we've seen when working with Rekognition, each TextDetection object contains a key property, Type, which distinguishes that object as one of two kinds of text detection: words and lines.
+The detectText function in Rekognition returns an array of text detection objects of the type [com.amazonaws.services.rekognition.model.TextDetection](https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/rekognition/model/TextDetection.html). Unlike other result objects we've seen when working with Rekognition, each TextDetection object contains a key property, Type, which distinguishes that object as one of two kinds of text detection: words and lines.
 
 Rekognition's text detection performs two detections in one call: one for each "line" of text in the image, and another for each individual word detected in the image, regardless of position. Lines are sequences of words in close physical proximity to one another in an image. Lines start in the upper-left corner of the image and are scanned across to the right and then down over the image, just as you would read a page of text in Western languages. (If you're looking for bias in Rekognition's text detection, there it is.)
 
@@ -83,22 +83,22 @@ returnStruct.lines = arrayNew(1);
 returnStruct.words = arrayNew(1);
 
 detectionsArray.each(function(thisDetectionObj, index) {
-	if (thisDetectionObj.getType() is "LINE") {
-		linesCounter++;
-		returnStruct.lines[linesCounter] = structNew();
-		returnStruct.lines[linesCounter]['label'] = thisDetectionObj.getDetectedText();
-		returnStruct.lines[linesCounter]['confidence'] = Int(thisDetectionObj.getConfidence());
-		returnStruct.lines[linesCounter]['id'] = thisDetectionObj.getID();
-		returnStruct.lines[linesCounter]['geometry'] = thisDetectionObj.getGeometry().toString();
-	} else {
-		wordsCounter++;
-		returnStruct.words[wordsCounter] = structNew();
-		returnStruct.words[wordsCounter]['label'] = thisDetectionObj.getDetectedText();
-		returnStruct.words[wordsCounter]['confidence'] = Int(thisDetectionObj.getConfidence());
-		returnStruct.words[wordsCounter]['id'] = thisDetectionObj.getID();
-		returnStruct.words[wordsCounter]['parentID'] = thisDetectionObj.getParentID();
-		returnStruct.words[wordsCounter]['geometry'] = thisDetectionObj.getGeometry().toString();
-	}
+  if (thisDetectionObj.getType() is "LINE") {
+    linesCounter++;
+    returnStruct.lines[linesCounter] = structNew();
+    returnStruct.lines[linesCounter]['label'] = thisDetectionObj.getDetectedText();
+    returnStruct.lines[linesCounter]['confidence'] = Int(thisDetectionObj.getConfidence());
+    returnStruct.lines[linesCounter]['id'] = thisDetectionObj.getID();
+    returnStruct.lines[linesCounter]['geometry'] = thisDetectionObj.getGeometry().toString();
+  } else { // getType is "WORD"
+    wordsCounter++;
+    returnStruct.words[wordsCounter] = structNew();
+    returnStruct.words[wordsCounter]['label'] = thisDetectionObj.getDetectedText();
+    returnStruct.words[wordsCounter]['confidence'] = Int(thisDetectionObj.getConfidence());
+    returnStruct.words[wordsCounter]['id'] = thisDetectionObj.getID();
+    returnStruct.words[wordsCounter]['parentID'] = thisDetectionObj.getParentID();
+    returnStruct.words[wordsCounter]['geometry'] = thisDetectionObj.getGeometry().toString();
+  }
 });
 {% endhighlight %}
 
@@ -108,29 +108,29 @@ This way, I end up with two structures: one for the lines of text in the image, 
 
 Back on /rekognition.cfm, we display the source image alongside the result of the text detection:
 
-{% highlight javascript %}
+{% highlight html %}
 <cfcase value="detectText">
-	<cfoutput>
-		<div>
-			<div style="width:50%; float:left;">
-				<p>Here is the image used:</p>
-				<p>
-					<img src="http://#s3images.awsBucketName#.s3.amazonaws.com/#sourceImage#" width="450" height="350" border="1" />
-				</p>
-			</div>
-			<div style="width:50%; float:right;">
-				<p>Lines of text:</p>
-				<cfloop array="#detectTextResult.lines#" index="idxThisLine">
-					#idxThisLine.id# | #idxThisLine.label# | (#idxThisLine.confidence#%)<br/>
-				</cfloop>
-				<p>Individual words:</p>
-				<cfloop array="#detectTextResult.words#" index="idxThisWord">
-					Line: #idxThisWord.parentID# &mdash; #idxThisWord.label# (#idxThisWord.confidence#%)<br/>
-				</cfloop>
-			</div>
-		</div>
-	    <br clear="all">
-	</cfoutput>
+  <cfoutput>
+    <div>
+      <div style="width:50%; float:left;">
+        <p>Here is the image used:</p>
+        <p>
+          <img src="http://#s3images.awsBucketName#.s3.amazonaws.com/#sourceImage#" width="450" height="350" border="1" />
+        </p>
+      </div>
+      <div style="width:50%; float:right;">
+        <p>Lines of text:</p>
+        <cfloop array="#detectTextResult.lines#" index="idxThisLine">
+          #idxThisLine.id# | #idxThisLine.label# | (#idxThisLine.confidence#%)<br/>
+        </cfloop>
+        <p>Individual words:</p>
+        <cfloop array="#detectTextResult.words#" index="idxThisWord">
+          Line: #idxThisWord.parentID# &mdash; #idxThisWord.label# (#idxThisWord.confidence#%)<br/>
+        </cfloop>
+      </div>
+    </div>
+    <br clear="all">
+  </cfoutput>
 </cfcase>
 {% endhighlight %}
 
@@ -152,6 +152,6 @@ Remember that Rekognition starts in the upper-left corner of the image and reads
 
 Line 2 is simply "Hurricane Katrina". That's because that line of header text for the image is slightly above the next line of text in the first bullet on the left ("temperature needed for"). "Temperature needed for" and "degrees C" (which can be found just below the temperature graph) are seen by Rekognition as being on the same horizontal line, so they appear in a single line of text (line 3).
 
-So while Rekognition is very good at detecting individual words, it still lacks a basic understanding of context &mdash; both semantically and positionally. Perhaps AWS will leverage some of their work on Alexa to ultimately be able to derive better semantic understanding of text in images to properly separate lines of text in images like this. In the meantime, the service does really well with full line detection when lines are clearly separated.
+While Rekognition is very good at detecting individual words, it still lacks a basic understanding of context &mdash; both semantically and positionally. Perhaps AWS will leverage some of their work on Alexa to ultimately be able to derive better semantic understanding of text in images to properly separate lines of text in images like this. In the meantime, the service does really well with full line detection when lines are clearly separated.
 
 That's it for my tour of using Rekognition from within CFML. If you have any questions about any of the posts in this series, feel free to <a href="https://twitter.com/brian_klaas">message me on the Twitter</a>!
