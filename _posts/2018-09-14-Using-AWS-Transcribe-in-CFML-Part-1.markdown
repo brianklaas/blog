@@ -1,11 +1,11 @@
 ---
 layout: post
 title:  "Using AWS Transcribe in CFML: Overview and Creating the Transcribe Service Object"
-date:   2018-09-14 10:51:00 -0400
+date:   2018-09-14 11:41:00 -0400
 categories: AWS ColdFusion
 ---
 
-As detailed in my previous series, [AWS offers a host of machine learning services](https://aws.amazon.com/machine-learning/) that you can tap into from within CFML. A CFML engine isn't neccessarily the best fit for doing machine learning, so I like to leave the heavy, undifferentiated lifting of setting up and training a machine learning infrastructure to people who really know what they are doing.
+[AWS offers a host of machine learning services](https://aws.amazon.com/machine-learning/) that you can tap into from within CFML. A CFML engine isn't neccessarily the best fit for doing machine learning, so I like to leave the heavy, undifferentiated lifting of setting up and training a machine learning infrastructure to people who really know what they are doing.
 
 In my last series of posts, I detailed [using AWS Rekognition from within CFML](aws/coldfusion/2018/07/23/Using-AWS-Rekognition-In-CFML-Part-1.html). We're going to move on from using Rekognition, a computer vision service, to using another ML-powered service: [Transcribe](https://aws.amazon.com/transcribe/).
 
