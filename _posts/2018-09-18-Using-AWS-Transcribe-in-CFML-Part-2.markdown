@@ -1,7 +1,7 @@
 ---
 layout: post
-title:  "Using AWS Transcribe in CFML: Starting a Transcribe Job
-date:   2018-09-18 13:35:00 -0400
+title:  "Using AWS Transcribe in CFML: Starting a Transcribe Job"
+date:   2018-09-18 07:25:00 -0400
 categories: AWS ColdFusion
 ---
 There are three distinct phases in working with [AWS Transcribe](https://aws.amazon.com/transcribe/): starting a job, waiting for the job to complete, and parsing the results of the job. This is because Transcribe is a fully asynchronous service. Transcribe cannot transcribe an hour long video in miliseconds. It takes time to do the work.
@@ -16,7 +16,7 @@ As always when working with an AWS service via the AWS Java SDK, there's a basic
 4. Tell the client to make the request.
 5. Get back a "response" object.
 
-As I wrote in the series on using Simple Notification Service (SNS) from CFML, the [JavaDocs for the AWS Java SDK](https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/index.html) are comprehensive and always up-to-date. They are, alas, also just JavaDocs. You're not going to find detailed examples of how to complete full tasks in these docs. If you look at the [documentation for the com.amazonaws.services.rekognition.AmazonRekognitionClient](https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/rekognition/AmazonRekognitionClient.html), you can see all the things that you can do with Rekognition via the Java SDK.
+As I wrote in the series on using Simple Notification Service (SNS) from CFML, the [JavaDocs for the AWS Java SDK](https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/index.html) are comprehensive and always up-to-date. They are, alas, also just JavaDocs. You're not going to find detailed examples of how to complete full tasks in these docs. If you look at the [documentation for the com.amazonaws.services.transcribe.AmazonTranscribeClient](https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/transcribe/AmazonTranscribeClient.html), you can see all the things that you can do with Rekognition via the Java SDK.
 
 Here are the steps to starting a Transcribe job via the AWS Java SDK:
 
@@ -28,7 +28,7 @@ Here are the steps to starting a Transcribe job via the AWS Java SDK:
 6. Set the S3OMediabject into the StartTranscriptionJobRequest object.
 7. Set the Settings object and all other required settings into the StartTranscriptionJobRequest.
 8. Run the StartTranscriptionJobRequest.
-9. Get back a startTranscriptionJobResult object.
+9. Get back a StartTranscriptionJobResult object.
 
 If you've read the other posts in this larger series on using AWS from CFML, you'll notice step 7 in the list above is a bit vague. I'll explain why below.
 
@@ -117,7 +117,7 @@ Although it seems like a throwaway requirement in starting a Transcribe job, the
 
 When you start a Transcribe job, you will get a [StartTranscriptionJobResult object](https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/transcribe/model/StartTranscriptionJobResult.html) back. Even so, that job name is what you need to do any future work with your Transcribe job.
 
-In the AWSPlaybox app, I take the job name and the start time and add those to an application-scoped array of current Transcribe jobs:
+In the AWSPlaybox app, I take the job name and the start time of the job, and add those to an application-scoped array of current Transcribe jobs:
 
 {% highlight javascript %}
 jobInfo = { 

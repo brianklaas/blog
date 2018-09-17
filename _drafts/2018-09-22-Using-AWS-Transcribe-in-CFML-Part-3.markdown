@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Using AWS Transcribe in CFML: Checking for Job Completion
+title:  "Using AWS Transcribe in CFML: Checking for Job Completion"
 date:   2018-09-22 13:35:00 -0400
 categories: AWS ColdFusion
 ---

@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Using AWS Transcribe in CFML: Retrieving a Transcript
+title:  "Using AWS Transcribe in CFML: Retrieving a Transcript"
 date:   2018-09-26 13:35:00 -0400
 categories: AWS ColdFusion
 ---
