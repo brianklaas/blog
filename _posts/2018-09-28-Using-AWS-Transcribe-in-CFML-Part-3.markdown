@@ -1,12 +1,12 @@
 ---
 layout: post
 title:  "Using AWS Transcribe in CFML: Checking for Job Completion"
-date:   2018-09-22 13:35:00 -0400
+date:   2018-09-28 08:35:00 -0400
 categories: AWS ColdFusion
 ---
-We've started a Transcribe job, now we need to see if the job is done. Jobs in Transcribe can take seconds, or even hours, depending on the length of the source media. Jobs are never immediately completed. As such, you'll need to approach this in an asyncrhonous manner.
+We've [started a Transcribe job](https://brianklaas.net/aws/coldfusion/2018/09/18/Using-AWS-Transcribe-in-CFML-Part-2.html), now we need to see if the job is done. Jobs in Transcribe can take seconds, or even hours, depending on the length of the source media. Jobs are never immediately completed. As such, you'll need to approach this in an asyncrhonous manner.
 
-Given that ColdFusion lacks the niceties of Promises in a langugae like JavaScript, and ColdFusion only recently added [support for Java Futures in ColdFusion 2018](https://coldfusion.adobe.com/2018/07/asynchronous-programming-in-coldfusion-2018-release/), we need to think of ColdFusion becomes the executor and checker of asynchronous jobs in AWS. In the previous post, we started a job, and put a reference to that job name in the application scope. (In a real production applicaiton, you'd want to save the job name to a database or other method of persistence.)
+Given that ColdFusion lacks the niceties of Promises in a langugae like JavaScript, and ColdFusion only recently added [support for Java Futures in ColdFusion 2018](https://coldfusion.adobe.com/2018/07/asynchronous-programming-in-coldfusion-2018-release/), we need to think of ColdFusion as the executor and checker of asynchronous jobs in AWS. In [the previous post](https://brianklaas.net/aws/coldfusion/2018/09/18/Using-AWS-Transcribe-in-CFML-Part-2.html), we started a job, and put a reference to that job name in the application scope. (In a real production applicaiton, you'd want to save the job name to a database or other method of persistence.)
 
 Now we can check on the status of the job.
 
@@ -38,7 +38,7 @@ As there are three basic actions when working with Transcribe job, I've broken o
 <cfif structKeyExists(URL, "checkTranscribeJob")>
 {% endhighlight %}
 
-You can only pass a URL.checkTranscribeJob value if you've already started a Transcribe job in the AWSPlaybox application.
+Note that you can only pass a URL.checkTranscribeJob value if you've already started a Transcribe job in the AWSPlaybox application.
 
 If you continue on in this code block, you'll see the five steps listed above translated into code:
 
@@ -67,7 +67,7 @@ transcribeJobResult.createdOn = transcriptJob.getCreationTime();
 transcribeJobResult.sourceMediaUri = transcriptJob.getMedia().getMediaFileUri();
 {% endhighlight %}
 
-The getStatus() method of the TranscriptionJob object can return one of three values: COMPLETED, FAILED, and IN_PROGRESS. If the job is currently in progress, there's nothing we can do but wait until another GetTranscriptionJobRequest is made.
+The getStatus() method of the TranscriptionJob object can return one of three values: COMPLETED, FAILED, and IN_PROGRESS. If the job is currently in progress, there's nothing we can do but wait around and make another GetTranscriptionJobRequest at a later time.
 
 If the status is COMPLETED, we can get more information, including the job completion time, and, most critically, the URI of the transcript itself:
 
