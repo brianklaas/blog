@@ -1,12 +1,12 @@
 ---
 layout: post
 title:  "Using AWS Transcribe in CFML: Retrieving a Transcript"
-date:   2018-09-26 13:35:00 -0400
+date:   2018-10-05 12:52:00 -0400
 categories: AWS ColdFusion
 ---
 Now that our Transcribe job is done, we can retrieve the output of the job. This isn't quite as straightfoward as it seems, and this post will show you how to both grab the full transcript result and just the text transcript itself.
 
-At the end of the last blog post, we saw the output of a transcript job if the status was COMPLETED. I've removed everything else that isn're relevant to outputing information about a completed job:
+At the end of [the last blog post](/aws/coldfusion/2018/09/28/Using-AWS-Transcribe-in-CFML-Part-3.html), we saw the output of a transcript job once the job status value was COMPLETED. I've removed everything else that isn're relevant to outputing information about a completed job:
 
 {% highlight html %}
   <cfif (transcribeJobResult.status IS "COMPLETED")>
@@ -23,7 +23,7 @@ Note the warning at the end: the links that are output are only valid for five m
 
 You may recall from [my posts on S3](https://brianklaas.net/aws/coldfusion/2018/05/26/Using-Simple-Storage-Service-in-CFML-Part-2.html) that one of the things you can do with the AWS Java SDK and S3 is create time-expiring URLs. This prevents a user from having unlimited access to a resource on S3. AWS does exactly this with transcription results that go into the default bucket for all of Transcribe. 
 
-As explained previously, unless you specify the OutputBucketName in the StartTranscriptionJobRequest, the results of your Transcribe job go into the default bucket for all of Transcribe. In the AWSPlaybox app, I do not specify the OutputBucketName in the StartTranscriptionJobRequest. Hence the time-expiring URLs on the result.
+As explained previously, unless you specify the OutputBucketName in the StartTranscriptionJobRequest, the results of your Transcribe job go into the default bucket for all of Transcribe. In the AWSPlaybox app, I do not specify the OutputBucketName in the StartTranscriptionJobRequest &mdash; hence the time-expiring URLs on the result.
 
 Your Transcribe job does not get removed from the default Transcribe bucket in S3 once these time-expiring URLs expire. In order to get another time-expiring URL, you need to run another GetTranscriptionJobRequest object using the original job name for the job. Parse the results just as you did in the last blog post, and you'll get your time-expiring URL to the full transcript job output.
 
@@ -35,9 +35,9 @@ At the top level, the full Transcribe job output JSON object contains four prope
 
 The results property contains three arrays: transcripts, speaker_labels, and items.
 
-- speaker_labels will only exist if you enable speaker labels in your original StartTranscriptionJobRequest, which we did.
-- items (which are individual words in the file) contains an array of structures which include the start and end time of the item (word), the start and end time at which the item (word) occurs, and an array of "alternatives," which are guesses that Transcribe made as to the exact word used and the confidence it has in that guess.
-- transcripts contains the full, continuous text transcription of the media file you originally provided.
+- *speaker_labels* will only exist if you enable speaker labels in your original StartTranscriptionJobRequest, which we did.
+- *items* (which are individual words in the file) contains an array of structures which include the start and end time of the item (word), the start and end time at which the item (word) occurs, and an array of "alternatives," which are guesses that Transcribe made as to the exact word used and the confidence it has in that guess.
+- *transcripts* contains the full, continuous text transcription of the media file you originally provided.
 
 You have a lot of data to work with in the full Transcribe job output JSON object. You can use the items array to create word-by-word captions for a video, or parse and dump that data into a database and allow people to search for specific words and jump directly to where that word appears in the original media file.
 
@@ -60,7 +60,7 @@ transcriptJob = getTranscriptionJobResult.getTranscriptionJob();
 transcriptUri = transcriptJob.getTranscript().getTranscriptFileUri();
 {% endhighlight %}
 
-The previous blog post covered this in detail, so if you can't follow what's going on above, please refer to that blog post.
+[The previous blog post](/aws/coldfusion/2018/09/28/Using-AWS-Transcribe-in-CFML-Part-3.html) covered this in detail, so if you can't follow what's going on above, please refer to that blog post.
 
 Now we have the transcriptUri value, which points to the full Transcribe job result object on AWS. We'll use CFML to grab that JSON object:
 
@@ -69,7 +69,7 @@ cfhttp(method="GET", charset="utf-8", url="#transcriptUri#", result="transcriptF
 transcriptFileAsJSON = deserializeJSON(transcriptFile.fileContent, false);
 {% endhighlight %}
 
-As mentioned above, at the top level is a results property. Inside that results property is a transcripts property. That's what we want. The transcripts property is an array of properties with the key of "transcript." There's only one transcript in the transcript array, and that contains the full, continuous text transcription of the media file you originally provided.
+As mentioned above, at the top level is a *results* property. Inside that *results* property is a *transcripts* property. That's what we want. The *transcripts* property is an array of properties with the key of "transcript." There's only one transcript in the transcript array, and that contains the full, continuous text transcription of the media file you originally provided.
 
 {% highlight javascript %}
 transcriptData = transcriptFileAsJSON.results;
@@ -84,6 +84,6 @@ writeDump(transcriptText);
 abort;
 {% endhighlight %}
 
-Any code that ends in abort isn't pretty, but it does the job. A production application would save the full, continuous text transcription to a database or a file for future use.
+Any code that ends in abort isn't pretty, but it does the job for this simple example. A production application would save the full, continuous text transcription to a database or a file for future use.
 
 That's it for my tour of using Transcribe from within CFML. If you have any questions about any of the posts in this series, feel free to <a href="https://twitter.com/brian_klaas">message me on the Twitter</a>!
