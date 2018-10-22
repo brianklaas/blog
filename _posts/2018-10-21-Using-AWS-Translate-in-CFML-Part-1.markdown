@@ -9,7 +9,7 @@ Our next stop in our trip through working with [the various machine learning ser
 
 ### What Can Translate Do for You?
 
-Translate is, obviously, a translation service. As of October, 2018, it can translate text input to or from English and any of the following languages:
+Translate is, obviously, a translation service. As of October 2018, it can translate text to or from English and any of the following languages:
 
 - Arabic (ar)
 - Chinese (Simplified) (zh)
@@ -30,7 +30,7 @@ Translate is [pretty cheap](https://aws.amazon.com/translate/pricing/): $15 per 
 
 Translate is also one of the easiest services to use from within CFML applications via the AWS Java SDK. There are some interesting service limits for which you have to compensate in your calling CFML code, which I'll cover in the next post.
 
-### Working with Transcribe from CFML
+### Working with Translate from CFML
 
 I'll once again use [my AWSPlaybox application](https://github.com/brianklaas/awsPlaybox) for all the example code.
 
@@ -47,9 +47,9 @@ As with all AWS services, you need to first create a client for the service that
 Here's the relevant code from AWSPlaybox/model/awsServiceFactory.cfc:
 
 {% highlight javascript %}
-serviceObject = CreateObject('java', 'com.amazonaws.services.translate.AmazonTranslateClientBuilder').standard().withCredentials(variables.awsStaticCredentialsProvider).withRegion(#variables.awsRegion#).build();
+serviceObject = CreateObject('java', 'com.amazonaws.services.translate.AmazonTranslateClientBuilder').standard().withCredentials(variables.awsStaticCredentialsProvider).withRegion('us-east-1').build();
 {% endhighlight %}
 
 Now we can work with Translate from within our CFML application. 
 
-In the next post (the only other post on Translate, because the service is so simple), we'll look at how you translate text, and, more importantly, how you compensate for the service limits that AWS Translate puts on your requests.
+In the next post &mdash; the only other post on Translate, because the service is so simple &mdash; we'll look at how you translate text, and, more importantly, how you compensate for the service limits that AWS Translate puts on your requests.
