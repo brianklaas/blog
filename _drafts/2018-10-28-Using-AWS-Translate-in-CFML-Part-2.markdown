@@ -18,7 +18,7 @@ The [JavaDocs for the AWS Java SDK](https://docs.aws.amazon.com/AWSJavaSDK/lates
 
 Here are the steps to translating text via the AWS Java SDK:
 
-1. Get a copy of [the Translate client we created in the first part of this series](/aws/coldfusion/2018/07/23/Using-AWS-Translate-In-CFML-Part-1.html).
+1. Get a copy of [the Translate client we created in the first part of this series](/aws/coldfusion/2018/10/21/Using-AWS-Translate-In-CFML-Part-1.html).
 2. Create a "TranslateTextRequest" object.
 3. Set the source and target language codes and the text you want translated in the TranslateTextRequest object.
 4. Tell the Translate service to run the TranslateTextRequest.
@@ -32,7 +32,7 @@ Here's how we do this in the [AWSPlaybox app](https://github.com/brianklaas/awsP
 
 The code to perform the five steps above, like using the service itself, is straightforward.
 
-The service needs both a target language for translation and some text to translate. We start with that in the code:
+The service needs both a target language for translation and some text to translate. We start with a check for both in the code:
 
 {% highlight javascript %}
 if (not(len(trim(FORM.targetLanguage))) or not(len(trim(FORM.textToTranslate)))) {
@@ -68,13 +68,13 @@ Most AWS service have limits. These are put in place so that no single client of
 - 10,000 *bytes* per 10 seconds per language pair (ie; en-fr, es-en, en-ch, etc.)
 - 20 transactions per second per language pair
 
-5,000 bytes of UTF-8 text is a pretty good amount of text if you're building a chat app. If you're trying to translate [Moby Dick](https://www.gutenberg.org/files/2701/2701-h/2701-h.htm) or your company's annual report, it's not going to be nearly enough.
+5,000 bytes of UTF-8 text is a pretty good amount of text if you're building a chat app. If you're trying to translate [Moby Dick](https://www.gutenberg.org/files/2701/2701-h/2701-h.htm) or your company's annual report, it's not going to be nearly enough data to perform all your work in a single request.
 
-As such, you're going to need to make sure that you're sending less than 5,000 bytes (not characters) of text in any single TranslateTextRequest. Additionally, you have to make sure that you're not sending more than 10,000 bytes per 10 seconds. If you violate either of these rules, your TranslateTextRequest will fail with a service limit error.
+As such, you're going to need to make sure that you're sending less than 5,000 *bytes* (not characters) of text in any single TranslateTextRequest. Additionally, you have to make sure that you're not sending more than 10,000 bytes per 10 seconds. If you violate either of these rules, your TranslateTextRequest will fail with a service limit error.
 
 There are many ways to handle this, and translate.cfm shows a simple way to deal with this.
 
-First, we calculate the number of chunks we need to break out text into in order to stay under the 5,000 bytes per request service limit. Then we need to calculate the number of pauses we'll need to make in order to not go over the 10,000 bytes per 10 seconds limit:
+First, we calculate the number of chunks we need to break the text into in order to stay under the 5,000 bytes per request service limit. Then we need to calculate the number of pauses we'll need to take in order to not go over the 10,000 bytes per 10 seconds limit:
 
 {% highlight javascript %}
 trimmedSourceText = trim(FORM.textToTranslate);
@@ -82,7 +82,7 @@ totalChunks = ceiling(len(trimmedSourceText) / 4900);
 totalPauses = ceiling(totalChunks / 2);
 {% endhighlight %}
 
-We then build an outer loop that goes through all the chunks (4,900 character pieces of the text we want to translate), and another check inside of that loop that pauses the loop using Java's sleep() method. This way, we avoid exceeding service limits (provided, of course, that we aren't also going over the 20 transactions per second limit as well).
+We then build an outer loop that goes through all the chunks (4,900 character slices of the text we want to translate), and another check inside of that loop that pauses the loop using Java's sleep() method. This way, we avoid exceeding service limits (provided, of course, that we aren't also going over the 20 transactions per second across all requests from our AWS account limit as well).
 
 {% highlight javascript %}
 for (currentChunkCounter = 1; currentChunkCounter <= totalChunks; currentChunkCounter++) {
@@ -102,7 +102,7 @@ for (currentChunkCounter = 1; currentChunkCounter <= totalChunks; currentChunkCo
 
 ## Better Handling of Word Truncation
 
-If we slice our text into equal chunks of 4,900 characters each, we will no doubt start truncating words in that process. That won't be good for making our final translated text read properly. Translate has a basic understanding of language semantics, so if you cut off the word "elephant" in the middle of the word, Translate won't be able to properly translate "ele" and "phant" as separate words. You'll end up with garbage.
+If we slice our text into equal chunks of 4,900 characters each, we will no doubt start truncating words in the process. That won't be good for making our final translated text read properly. Translate has a basic understanding of language semantics, so if you cut off the word "elephant" in the middle of the word, Translate won't be able to properly translate "ele" and "phant" as separate words. You'll end up with garbage.
 
 As such, you should make sure you're not cutting words off in the middle. In translate.cfm, we do that as follows:
 
@@ -116,4 +116,16 @@ if (len(chunkToTranslate) GTE 4900) {
 
 There are probably more elegant, complex solutions to this challenge that better handle non-English (and non-Western) source languauge text, but since Translate only translates to and from English, this is a fairly good solution.
 
-That's it for working with AWS Translate from within CFML. As I mentioned, it's really simple and most of the code was for dealing with service limitations. If you have any questions about any of the posts in this series, feel free to <a href="https://twitter.com/brian_klaas">message me on the Twitter</a>!
+## Outputting the Translation Result
+
+Again, the Translate service is quite simple to work with. The translateTextResult object that's returned from a TranslateTextRequest is little more than a POJO (plain old Java object) with a few simple properties. The property we care about is the translatedText property.
+
+Because we're looping and adding one chunk of text to another, we simply concatenate any existing translated text with the translated text that just came back from the TranslateTextRequest:
+
+{% highlight javascript %}
+finalTranslation &= translateTextResult.getTranslatedText();
+{% endhighlight %}
+
+When we're done, we simply output the finalTranslation string. In a production application, you'd probably want to store the finalTranslation string in a database for further processing or re-use. 
+
+That's it for working with AWS Translate from within CFML. As I mentioned, it's really simple and most of the code in the example was for dealing with service limitations. If you have any questions about any of the posts in this series, feel free to <a href="https://twitter.com/brian_klaas">message me on the Twitter</a>!
