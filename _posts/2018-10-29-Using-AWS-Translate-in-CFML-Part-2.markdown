@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Using AWS Translate in CFML: Making a Translation Request and Dealing with Service Limits"
-date:   2018-10-28 07:25:00 -0400
+date:   2018-10-29 10:35:00 -0400
 categories: AWS ColdFusion
 ---
 [AWS Translate](https://aws.amazon.com/translate/) is a simple service to use from within your CFML or Java application. The service only does one thing: translate text from one language to another.
