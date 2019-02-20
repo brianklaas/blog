@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Using AWS Lambda in CFML: Creating a NodeJS Lambda Function that You Can Call From CFML"
-date:   2019-02-19 10:51:00 -0500
+date:   2019-02-20 8:31:00 -0500
 categories: AWS ColdFusion
 ---
 
@@ -35,7 +35,7 @@ exports.handler = (event, context, callback) => {
 
 Let me break this code down a bit:
 
-Lambda expects a single function to be made available from your code. That's the function it will run when the Lambda function is invoked by a call from your CFML application (or from any number of event sources in AWS). The de facto standard name for this function is "handler," as evidenced in the first line of code above. You can name it whatever you want, but most people go with "handler."
+Lambda expects a single function to be made available from your code. That's the function it will run when the Lambda function is invoked by a call from your CFML application (or from any number of event sources in AWS). The de facto standard name for this function is "handler," as evidenced in the first line of code above. You can name the function whatever you want, but most people go with "handler."
 
 The handler function takes three arguments: the event object, the context object, and a callback function.
 
@@ -62,9 +62,9 @@ This is a really simple example of a Lambda function in NodeJS. My team has buil
 
 ### Running the AWSPlaybox NodeJS Example in Lambda
 
-As the AWS Console is constantly changing, I'm not going to provide extensive instructions on getting this function running inside of Lambda. [AWS has a very clear tutorial on how to do this](https://docs.aws.amazon.com/lambda/latest/dg/getting-started-create-function.html). Although the AWS example uses Python, you'll set your runtime to NodeJS. The Handler function is "index.handler". You don't need to add any triggers and you don't need to set any other configuration options beyond the defaults.
+As the AWS Console is constantly changing, I'm not going to provide extensive instructions on getting this function running inside of Lambda. [AWS has a very clear tutorial on how to run a simple function in Lambda](https://docs.aws.amazon.com/lambda/latest/dg/getting-started-create-function.html). Although the AWS example uses Python, you'll set your runtime to NodeJS. The Handler function is "index.handler". You don't need to add any triggers and you don't need to set any other configuration options beyond the defaults.
 
-To enter the actual code, use the [AWS Cloud 9 Editor](https://aws.amazon.com/cloud9/) that's built into the Lambda console. You can literally copy and paste the code from the [/nodejs/lambda/returnDataToCaller.js file](https://github.com/brianklaas/awsPlaybox/blob/master/nodejs/lambda/returnDataToCaller.js) file.
+To enter the actual code, use the [AWS Cloud 9 Editor](https://aws.amazon.com/cloud9/) that's built into the Lambda console. You can literally copy and paste the code from the [/nodejs/lambda/returnDataToCaller.js file](https://github.com/brianklaas/awsPlaybox/blob/master/nodejs/lambda/returnDataToCaller.js).
 
 > As a side note, Cloud 9 is a pretty darn good cloud-based editor. I do almost all my Lambda development work in Cloud 9, as it has integrated debugging for NodeJS Lambda functions. It's quite capable, robust, and easy to use.
 
@@ -92,7 +92,9 @@ Click the "Test" button with this sample data selected, and you'll see the resul
 
 ### Alternatives to Developing Your Lambda Functions in the Console
 
-Developing in the AWS console is a great way to get started, and to learn about the details of the service. In the long run, though, you're going to want to abstract away a lot of this manual work and, ultimately, move toward an automated build and deployment pipeline. Fortunately, Lambda has two mature frameworks for exactly this:
+Developing in the AWS console is a great way to get started, and to learn about the details of the service. If you need to rely on NodeJS packages in your Lambda function, though, you'll need to develop locally, zip up your JS file(s) and the node_modules folder (but not the folder in which your JS and node_modules reside!), and upload that .zip file to either the Lambda console or a location in a S3 bucket. This makes for tedious development cycles, but is the only way to use NodeJS packages.
+
+In the long run, though, you're going to want to abstract away a lot of this manual work and, ultimately, move toward an automated build and deployment pipeline. Fortunately, Lambda has two mature frameworks for exactly this:
 
 - [Serverless](https://serverless.com)
 - [SAM (Serverless Application Model)](https://aws.amazon.com/serverless/sam/)
@@ -101,4 +103,4 @@ Covering either of these frameworks is beyond the scope of this post, but once y
 
 The Serverless framework has a robust ecosystem of plugins that can make complex serverless functions a lot simpler to build and deploy. SAM is maintained by AWS, has a CLI, and has the ability to test Lambda functions locally. A Google search for "Serverless framework vs SAM" will return a lot of discussion on the topic.
 
-Both frameworks ultimately focus on accessing your Lambda functions via http calls to the [AWS API Gateway](https://aws.amazon.com/api-gateway/), rather than direct invocation, which is what we're doing in this series. As such, direct invocation is what we'll cover next.
+Both frameworks ultimately focus on accessing your Lambda functions via http calls to the [AWS API Gateway](https://aws.amazon.com/api-gateway/), rather than direct invocation, which is what we're doing in this series. As such, direct invocation is what we'll cover in the next post.
