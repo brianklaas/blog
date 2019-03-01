@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Using AWS Lambda in CFML: Invoking Your Lambda Function From CFML"
-date:   2019-02-25 7:51:00 -0500
+date:   2019-02-25 7:46:00 -0500
 categories: AWS ColdFusion
 ---
 
@@ -33,7 +33,7 @@ payload = {
 
 I'm using CFML's implict struct and array notation here, rather than explicity defining each structure and each sub-array in CFML. Note that if you're using ColdFusion 10 or lower, ColdFusion upper cases serialization of keys in a structure unless you use array notation to define the keys in the struct. That will cause you problems in case-sensitive JavaScript on the NodeJS backend function.
 
-The heart of Lambda function invocation is the typical request/reponse object pattern found throughout the AWS Java SDK. You create a request object of some type, send it to the service, and get a response object back from the service. In this case, we're going to create an [InvokeRequest](https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/lambda/model/InvokeRequest.html) object, set the required properties, send that InvokeRequest object off to the Lambda service, and get an [InvokeResult](https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/lambda/model/InvokeResult.html) object back.
+The heart of Lambda function invocation is the typical request/reponse object pattern found throughout the AWS Java SDK: you create a request object of some type, send it to the service, and get a response object back from the service. In this case, we're going to create an [InvokeRequest](https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/lambda/model/InvokeRequest.html) object, set the required properties, send that InvokeRequest object off to the Lambda service, and get an [InvokeResult](https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/lambda/model/InvokeResult.html) object back.
 
 Here's the code in CFML, which is pretty straightforward:
 
@@ -45,11 +45,11 @@ invokeRequest.setPayload(jsonPayload);
 result = variables.lambda.invoke(invokeRequest);
 {% endhighlight %}
 
-The functionName property of the invokeRequest object is the ARN &mdash; [Amazon Resource Name](https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html) &mdash; of your Lambda function running in AWS. The ARN is the unique identifier, across all of AWS, for your Lambda function. It can be found in the AWS Lambda console.
+The functionName property of the invokeRequest object is the ARN ([Amazon Resource Name](https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html)) of your Lambda function running in AWS. The ARN is the unique identifier, across all of AWS, for your Lambda function. It can be found in the AWS Lambda console.
 
-The payload (the data you're sending to the Lambda function) has to be serialized into JSON before setting via the setPayload() method, because that is what is expected by the NodeJS-based function that is being called. If you're not sending JSON, then you can put the raw data, in whatever format it might exist, into the payload. The payload size cannot exceed a maximum of 6MB in a *synchronous* function invocation, which is what we are doing here.
+The payload (the data you're sending to the Lambda function) has to be serialized into JSON before setting via the setPayload() method, because JSON is what is expected by the NodeJS-based function that is being called. If you're not sending JSON, then you can put the raw data, in whatever format it might exist, into the payload. The payload size cannot exceed a maximum of 6MB in a *synchronous* Lambda function invocation, which is what we are doing here.
 
-> Note that the AWS Java SDK has asynchronous client builders along with the synchronous client builders that are used in the AWSPlaybox application. The async clients return [Futures](https://www.baeldung.com/java-future) on each function invocation. Given that [ColdFuson 2018 now supports Java Futures for asynchronous programming workflows](https://coldfusion.adobe.com/2018/07/asynchronous-programming-in-coldfusion-2018-release/), I can foresee myself starting to use the async AWS Java SDK clients. If a Lambda function is invoked asynchronously, the payload size [cannot exceed 256KB in size](https://docs.aws.amazon.com/lambda/latest/dg/limits.html).
+> Note that the AWS Java SDK has asynchronous client builders along with the synchronous client builders that are used in the AWSPlaybox application. The async clients return [Futures](https://www.baeldung.com/java-future) on each function invocation. Given that [ColdFuson 2018 now supports Java Futures for asynchronous programming workflows](https://coldfusion.adobe.com/2018/07/asynchronous-programming-in-coldfusion-2018-release/), I can foresee myself starting to use the async AWS Java SDK clients. If a Lambda function is invoked asynchronously, the payload [cannot be larger than 256KB in size](https://docs.aws.amazon.com/lambda/latest/dg/limits.html).
 
 We've made our request to Lambda. Lambda receives that request, fires up a tiny little execution environment (if one with our code is not already running), executes our code, and then returns a result to the caller. Our caller (our CFML code) waits around for execution completion because this is a synchronous call.
 
