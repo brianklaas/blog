@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Using AWS Step Functions in CFML: Making Choices and Branching in a Step Functions Workflow"
-date:   2019-04-25 15:51:00 -0400
+date:   2019-05-01 15:51:00 -0400
 categories: AWS ColdFusion
 ---
 

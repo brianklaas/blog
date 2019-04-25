@@ -37,7 +37,7 @@ You can pass data into any state, and get data out of any state. Data is express
 
 Step Functions also has the ability to handle errors and retires, including backoff rates, from within the state machine JSON itself. You don't have to write code which handles errors. You don't have to write code which handles retries and deals with backoff to reduce the possibility of cascading failures. Step Functions does this for you. It's yet another way that Step Functions helps to keep your Lambda functions isolated, simple, and re-usable across workflows.
 
-### Working with Lambda from CFML
+### Working with Step Functions from CFML
 
 I'll once again use [my AWSPlaybox application](https://github.com/brianklaas/awsPlaybox) for all the example code.
 

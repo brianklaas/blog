@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Using AWS Step Functions in CFML: The First Example Workflow and an Exploration of Task States"
-date:   2019-04-23 15:51:00 -0400
+date:   2019-04-25 16:51:00 -0400
 categories: AWS ColdFusion
 ---
 
@@ -9,9 +9,9 @@ In the first post in this series, I introduced Step Functions and described the 
 
 > Remember that the full code for everything I talk about in this series is in [my AWSPlaybox application](https://github.com/brianklaas/awsPlaybox).
 
-I [covered AWS Rekognition](https://brianklaas.net/aws/coldfusion/2018/07/23/Using-AWS-Rekognition-In-CFML-Part-1.html) in a previous blog series, so if you're not familiar with what Rekognition is, then please review that series first. Rekognition is a machine vision service that allows us to perform all sorts of analysis on the content of an image or video.
+I [covered AWS Rekognition](/aws/coldfusion/2018/07/23/Using-AWS-Rekognition-In-CFML-Part-1.html) in a previous blog series, so if you're not familiar with what Rekognition is, please review that series first. Rekognition is a machine vision service that allows you to perform all sorts of analysis on the content of an image or video.
 
-This example Step Function workflow is pretty simple. The steps are:
+This first example Step Function workflow is pretty simple. The steps are:
 
 1. Start the workflow.
 2. Generate a random number between 1 and 100
@@ -111,9 +111,9 @@ In our workflow, the first step in our workflow is the "generateRandomNumber" st
 }
 {% endhighlight %}
 
-As you can see from the code, the type of this state is a *task* state. The task points to a *resource* to do work. In this case, the resource is a Lamdba function in our account titled "confDemoRandomNumber." The string that defines this resource ("arn:aws:lambda...") is an ARN &mdash; an Amazon Resource Name &mdash; for the confDemoRandomNumber Lambda function. The ARN is the unique identifier for a resource across all of the services and all of the data centers in *all* of AWS. You can find the ARN of your Lambda functions in the Lambda console.
+As you can see from the code, the type of this state is a *task* state. The task points to a *resource* to do work. In this case, the resource is a Lamdba function in our AWS account titled "confDemoRandomNumber." The string that defines this resource ("arn:aws:lambda...") is an ARN &mdash; an Amazon Resource Name &mdash; for the confDemoRandomNumber Lambda function. The ARN is the unique identifier for a resource across all of the services and all of the data centers in *all* of AWS. You can find the ARN of your Lambda functions in the Lambda console.
 
-The code for the confDemoRandomNumber function is quite simple, and is written for Node.js:
+The code for the confDemoRandomNumber Lambda function is quite simple, and is written for Node.js:
 
 {% highlight javascript %}
 exports.handler = (event, context, callback) => {
@@ -126,15 +126,15 @@ exports.handler = (event, context, callback) => {
 
 All this function does is generate a random number between 1 and 100, and returns that value to the calling environment &mdash; in this case, it's our Step Functions workflow.
 
-How do we get the result from our random number generator function back into our Step Functions workflow? Not only do we need to make sure the value is returned from our Lambda function, we also need to capture that value in our Step Functions workflow definition. We do that with this line of code:
+How do we get the result from our random number generator function back into our Step Functions workflow? Not only do we need to make sure that a value is returned from our Lambda function, we also need to capture that value in our Step Functions workflow definition. We do that with this line of code:
 
 {% highlight json %}
 "ResultPath": "$.randomNumber"
 {% endhighlight %}
 
-I'll be going in to more depth about variable passing in Step Functions workflow in the next post, but for now, just understand that the result from our confDemoRandomNumber function is going into a variable titled "$.randomNumber" in our Step Functions workflow.
+I'll be going into more depth about variable passing in Step Functions workflows in the next post, but, for now, just understand that the result from our confDemoRandomNumber Lambda function is going into a *variable* titled "$.randomNumber" in our Step Functions workflow.
 
-Finally, this task state tells the workflow where to go next by a "Next" property of this task state. In this case, the generateRandomNumber state tells the Step Functions environment to go to the ChoiceState state next:
+Finally, this task state tells the workflow where to go next via the "Next" property of this task state. In this case, the generateRandomNumber state tells the Step Functions execution environment to go to the ChoiceState state next:
 
 {% highlight json %}
 "Next": "ChoiceState"
@@ -144,7 +144,7 @@ That's the essence of a task state. You invoke a Lambda function, get results ba
 
 ### Invoking AWS Services Directly in a Task State
 
-When the Step Functions service initially launched, you could only invoke Lambda functions from within a task state. After a year or so of use, AWS looked at common patterns of function invocation and saw that some key services were being invoked from Lambda functions in Step Functions workflows over and over again. To make it so that developers had to write less code, AWS updated the Step Functions execution environment so that those key services could be invoked directly from within the Step Functions workflow definition code, wihtout an intermediary Lambda function doing the work.
+When the Step Functions service initially launched, you could only invoke Lambda functions from within a task state. After a year of use, AWS looked at common patterns of function invocation and saw that a small set of key AWS services were being invoked repeatedly from Lambda functions in Step Functions workflows. To make it so that developers had to write less code, AWS updated the Step Functions execution environment so that those key services could be invoked directly from within the Step Functions workflow definition code, wihtout an intermediary Lambda function doing the work.
 
 The following services are directly integrated into the Step Functions execution environment:
 
@@ -170,8 +170,8 @@ For example, if you wanted a state in a Step Functions workflow to publish a mes
 }
 {% endhighlight %}
 
-Instead of having to write a simple Lambda function to publish a message to SNS, you can do that directly from your Step Functions workflow code. This opens up some powerful options in Step Functions workflows, particularly when you are running a workflow over a large batch of data files that should be processed by a machine learning toolset on SageMaker, or when have a Docker image running inside of Elastic Container Service that will perform complex tax calculations on a set of passed-in data. 
+Instead of having to write a simple Lambda function to publish a message to SNS, you can do that directly from your Step Functions workflow code. This opens up some powerful options in Step Functions workflows, particularly when you are running a workflow over a large batch of data files that should be processed by a machine learning toolset on SageMaker, or when you have a Docker image running inside of Elastic Container Service that will perform complex tax calculations on a set of passed-in data. 
 
 The examples in the AWS Playbox application don't invoke AWS services directly. If you'd like to learn more about this feature of Step Functions, please refer to the [Step Functions documentation](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-connectors.html).
 
-In the next part of this series, we'll look at passing data into and out of individual task states. This is important to understand because we're about to go into a state that chooses two options based on the result of our first task.
+In the next part of this series, we'll look at passing data into and out of individual task states. This is important to understand because we're about to go into a state that chooses one of two options based on the result of our first task.

@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Using AWS Step Functions in CFML: Getting Data Into and Out of Step Function States"
-date:   2019-04-24 15:51:00 -0400
+date:   2019-04-27 15:51:00 -0400
 categories: AWS ColdFusion
 ---
 

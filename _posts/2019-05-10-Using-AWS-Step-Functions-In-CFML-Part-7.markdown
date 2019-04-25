@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Using AWS Step Functions in CFML: Finishing the Workflow Execution and Returning Data to the Caller"
-date:   2019-04-28 15:51:00 -0400
+date:   2019-05-10 15:51:00 -0400
 categories: AWS ColdFusion
 ---
 
