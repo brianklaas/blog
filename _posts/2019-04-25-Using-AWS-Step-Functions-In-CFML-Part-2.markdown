@@ -56,7 +56,7 @@ Here's what this workflow looks like in the [Amazon States Language](https://sta
       "Next": "getImageLabels"
     },
 
-    "setDataForImageTwo": {
+  "setDataForImageTwo": {
       "Type" : "Pass",
       "Result": { "s3Bucket": "awsplayboxbucket", "s3Key": "images/dogForLabels.jpg" },
       "Next": "getImageLabels"
@@ -82,7 +82,7 @@ Here's what this workflow looks like in the [Amazon States Language](https://sta
 
 This code can be found in [my AWSPlaybox application](https://github.com/brianklaas/awsPlaybox) in the sateMachines/choiceDemoStateMachine.json file.
 
-I'll break all of the above down for you, and introduce you to a couple of key state types in Step Functions as we go along.
+I'll break down all of the above for you, and introduce you to a couple of key state types in Step Functions as we go along.
 
 ### Starting a Step Functions Workflow
 
@@ -132,9 +132,9 @@ How do we get the result from our random number generator function back into our
 "ResultPath": "$.randomNumber"
 {% endhighlight %}
 
-I'll be going into more depth about variable passing in Step Functions workflows in the next post, but, for now, just understand that the result from our confDemoRandomNumber Lambda function is going into a *variable* titled "$.randomNumber" in our Step Functions workflow.
+I'll go into more depth about variable passing in Step Functions workflows in the next post, but, for now, just understand that the result from our confDemoRandomNumber Lambda function is going into a *variable* titled "$.randomNumber" in our Step Functions workflow.
 
-Finally, this task state tells the workflow where to go next via the "Next" property of this task state. In this case, the generateRandomNumber state tells the Step Functions execution environment to go to the ChoiceState state next:
+Finally, this task state tells the workflow where to go next via the "Next" property of the task state. In this case, the generateRandomNumber state tells the Step Functions execution environment to go to the ChoiceState state next:
 
 {% highlight json %}
 "Next": "ChoiceState"
@@ -144,7 +144,7 @@ That's the essence of a task state. You invoke a Lambda function, get results ba
 
 ### Invoking AWS Services Directly in a Task State
 
-When the Step Functions service initially launched, you could only invoke Lambda functions from within a task state. After a year of use, AWS looked at common patterns of function invocation and saw that a small set of key AWS services were being invoked repeatedly from Lambda functions in Step Functions workflows. To make it so that developers had to write less code, AWS updated the Step Functions execution environment so that those key services could be invoked directly from within the Step Functions workflow definition code, wihtout an intermediary Lambda function doing the work.
+When the Step Functions service initially launched, you could only invoke Lambda functions from within a task state. After a year of use, AWS looked at common patterns of function invocation and saw that a small set of core AWS services were being invoked repeatedly from Lambda functions in Step Functions workflows. To make it so that developers had to write less code, AWS updated the Step Functions execution environment so that those key services could be invoked directly from within the Step Functions workflow definition code, wihtout an intermediary Lambda function doing the work.
 
 The following services are directly integrated into the Step Functions execution environment:
 
@@ -170,7 +170,7 @@ For example, if you wanted a state in a Step Functions workflow to publish a mes
 }
 {% endhighlight %}
 
-Instead of having to write a simple Lambda function to publish a message to SNS, you can do that directly from your Step Functions workflow code. This opens up some powerful options in Step Functions workflows, particularly when you are running a workflow over a large batch of data files that should be processed by a machine learning toolset on SageMaker, or when you have a Docker image running inside of Elastic Container Service that will perform complex tax calculations on a set of passed-in data. 
+Instead of having to write a simple Lambda function to publish a message to SNS, you can do that directly from your Step Functions workflow code. This opens up some powerful options in Step Functions workflows, particularly when, for example, you are running a workflow over a large batch of data files that should be processed by a machine learning toolset on SageMaker, or when you have a Docker image running inside of Elastic Container Service that will perform complex tax calculations on a set of passed-in data. 
 
 The examples in the AWS Playbox application don't invoke AWS services directly. If you'd like to learn more about this feature of Step Functions, please refer to the [Step Functions documentation](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-connectors.html).
 
