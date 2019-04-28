@@ -1,13 +1,13 @@
 ---
 layout: post
 title:  "Using AWS Step Functions in CFML: Performing the Image Analysis Task"
-date:   2019-05-08 15:51:00 -0400
+date:   2019-05-10 15:51:00 -0400
 categories: AWS ColdFusion
 ---
 
 It's taken us a few posts to get to this point, but we've now randomly chosen an image on which we'll perform analysis using [AWS Rekognition](https://brianklaas.net/aws/coldfusion/2018/07/23/Using-AWS-Rekognition-In-CFML-Part-1.html), a machine vision service. This post introduces no new state types, and focuses on the Lambda code used to perform the image analysis.
 
-The last state in the execution of our workflow as one of two pass states: either setDataForImageOne or setDataForImageOne. Both of these pass states specified "getImageLabels" as the next step in the workflow. Here's the definition of the getImageLabels state:
+The last state in the execution of our workflow was one of two pass states: either setDataForImageOne or setDataForImageTwo. Both of these pass states specified "getImageLabels" as the next step in the workflow. Here's the definition of the getImageLabels state:
 
 {% highlight json %}
 "getImageLabels": {
@@ -56,6 +56,6 @@ Note that the event.s3Bucket and event.s3Key values came from the setDataForImag
 
 If you'd like to know what the MaxLabels and MinConfidence values represent in the params structure, please read [the post on detecting labels in an image](https://brianklaas.net/aws/coldfusion/2018/07/29/Using-AWS-Rekognition-In-CFML-Part-2.html) from my [series on working with the Rekognition service from CFML](https://brianklaas.net/aws/coldfusion/2018/07/23/Using-AWS-Rekognition-In-CFML-Part-1.html).
 
-The important code in this Lambda function comes at the end, where we invoke the detectLabels() function on the rekognition service object. This function returns a set of data that we will return to the caller of our Step Functions workflow. We add in the s3Bucket and s3Key values to that data object so our caller will know which image was randomly chosen. That data is then sent back to our caller &mdash; the Step Functions workflow.
+The important code in this Lambda function comes at the end, where we invoke the detectLabels() function on the Rekognition service object. This function returns a set of data that we will later return to the caller of our Step Functions workflow. We add in the s3Bucket and s3Key values to that data object so our caller will know which image was randomly chosen. That data is then sent back to our caller &mdash; the Step Functions workflow.
 
-This task state is really the final step in this example Step Functions workflow. But how does a Step Functions workflow know when to finish? How does the result of this Lambda function get back to the thing that started this Step Functions workflow execution in the first place? That's the subject of the next post.
+This task state is the final practical step in this example Step Functions workflow. But how does a Step Functions workflow know when to finish? How does the result of this Lambda function get back to the thing that invoked this Step Functions workflow execution in the first place? That's the subject of the next post.

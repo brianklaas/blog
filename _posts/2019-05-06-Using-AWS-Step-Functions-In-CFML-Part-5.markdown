@@ -1,17 +1,17 @@
 ---
 layout: post
 title:  "Using AWS Step Functions in CFML: Injecting Key-Value Pairs Into Your Step Function Execution with Pass States"
-date:   2019-05-04 15:51:00 -0400
+date:   2019-05-06 15:51:00 -0400
 categories: AWS ColdFusion
 ---
 
 As we work our way through this [example workflow of performing analysis on a randomly selected image](https://github.com/brianklaas/awsPlaybox/blob/master/stateMachines/choiceDemoStateMachine.json), we've looked at task states, task input and output, and making choices in a workflow. In this post, we'll look at a simple, but critical, option in the execution of a Step Functions workflow: adding additional data to the workflow execution.
 
-Our workflow exection has made a choice as to where it goes next in the process. It will go either to the setDataForImageOne state if the random number we generated was less than or equal to 50, or it will go to the setDataForImageTwo state if the random number we generated is greater than 50. Both the setDataForImageOne state and the setDataForImageTwo state are pass states. 
+Our workflow exection has made a choice as to where it goes next in the process. It will go either to the setDataForImageOne state if the random number we generated was less than or equal to 50, or it will go to the setDataForImageTwo state if the random number we generated is greater than 50. Both the setDataForImageOne state and the setDataForImageTwo state are known as "pass" states. 
 
 ### Pass States: What Are They Good For?
 
-Not much happens in a pass state. Pass states exist solely to inject new key-value pairs into the set of data being passed into future task states in the Step Functions workflow. In our example, the setDataForImageOne and setDataForImageTwo states are represented as follows:
+Not much happens in a pass state. Pass states exist solely to inject new key-value pairs into the set of data being passed into future steps in the Step Functions workflow. In our example, the setDataForImageOne and setDataForImageTwo states are represented as follows:
 
 {% highlight json %}
 "setDataForImageOne": {
