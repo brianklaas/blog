@@ -96,4 +96,10 @@ exports.handler = (event, context, callback) => {
 
 This Lambda function always returns a set of data about the job &mdash; including the job status &mdash; as long as it does not error out in the process. As you can see, the job name, which we defined in the first step in the workflow (startTranscribeMP4), is critical. Without the job name as created in that first step, we can't check on the job status. That's why the jobName is always passed in every step in the workflow.
 
-The getTranscriptionJob function also returns the URI of the transcript output file. We'll see how to retrieve that transcript output file in the next post.
+### Retrieving the Transcript File And Moving On
+
+The getTranscriptionJob function also returns the URI of the transcript output file. Before we can start the second half of this second example workflow, we need to grab that file and store it for future use. There's are many potential uses for the full transcription of the video. Rather than getting it from the default, AWS-controlled bucket into which the transcription goes upon completion, we'll put it in a bucket of our own. (If you don't know why the transcription ends up in an AWS-controlled bucket, please see my eariler series on [working with AWS Transcribe](http://brianklaas.net/aws/coldfusion/2018/10/05/Using-AWS-Transcribe-in-CFML-Part-4.html).)
+
+The code in [nodejs/lambda/transcribeTranslateExample/getTranscriptionFile.js](https://github.com/brianklaas/awsPlaybox/blob/master/nodejs/lambda/transcribeTranslateExample/getTranscriptionFile.js) shows how to do this. It's basically just reading the file from the AWS-controlled S3 bucket, reading the transcription file into memory, and then writing that file to our own S3 bucket. 
+
+This completes the first half of this workflow, which was dominated by the wait loop. The second half of the worfklow focuses on parallel tasks, and, obviously, introduces the parallel task state. That's what we'll look at next.
