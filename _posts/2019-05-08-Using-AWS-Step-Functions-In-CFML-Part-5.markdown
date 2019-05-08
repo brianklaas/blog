@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Using AWS Step Functions in CFML: Injecting Key-Value Pairs Into Your Step Function Execution with Pass States"
-date:   2019-05-06 15:51:00 -0400
+date:   2019-05-08 10:30:00 -0400
 categories: AWS ColdFusion
 ---
 
