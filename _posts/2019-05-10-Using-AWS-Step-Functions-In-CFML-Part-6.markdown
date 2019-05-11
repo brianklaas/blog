@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Using AWS Step Functions in CFML: Performing the Image Analysis Task"
-date:   2019-05-10 15:51:00 -0400
+date:   2019-05-10 12:51:00 -0400
 categories: AWS ColdFusion
 ---
 
@@ -56,6 +56,8 @@ Note that the event.s3Bucket and event.s3Key values came from the setDataForImag
 
 If you'd like to know what the MaxLabels and MinConfidence values represent in the params structure, please read [the post on detecting labels in an image](https://brianklaas.net/aws/coldfusion/2018/07/29/Using-AWS-Rekognition-In-CFML-Part-2.html) from my [series on working with the Rekognition service from CFML](https://brianklaas.net/aws/coldfusion/2018/07/23/Using-AWS-Rekognition-In-CFML-Part-1.html).
 
-The important code in this Lambda function comes at the end, where we invoke the detectLabels() function on the Rekognition service object. This function returns a set of data that we will later return to the caller of our Step Functions workflow. We add in the s3Bucket and s3Key values to that data object so our caller will know which image was randomly chosen. That data is then sent back to our caller &mdash; the Step Functions workflow.
+The important code in this Lambda function comes at the end, where we invoke the detectLabels() function on the Rekognition service object. This function returns a set of data that we will later return to the caller of our Step Functions workflow. We add the s3Bucket and s3Key values to that data object so our caller will know which image was randomly chosen. That data is then sent back to our caller &mdash; the Step Functions workflow.
 
-This task state is the final practical step in this example Step Functions workflow. But how does a Step Functions workflow know when to finish? How does the result of this Lambda function get back to the thing that invoked this Step Functions workflow execution in the first place? That's the subject of the next post.
+This task state is the final practical step in this example Step Functions workflow. The question then is: how does a Step Functions workflow know when to finish? How does the result of this Step Functions workflow get back to the thing that invoked this Step Functions workflow execution in the first place? 
+
+That's the subject of the next post.
