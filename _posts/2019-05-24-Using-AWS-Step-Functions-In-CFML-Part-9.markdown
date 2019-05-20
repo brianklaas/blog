@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Using AWS Step Functions in CFML: Introducing the Second Example Step Functions Workflow"
-date:   2019-05-20 15:51:00 -0400
+date:   2019-05-24 15:51:00 -0400
 categories: AWS ColdFusion
 ---
 

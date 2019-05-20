@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Using AWS Step Functions in CFML: Looping in Step Functions Workflows via the Wait State"
-date:   2019-05-28 15:51:00 -0400
+date:   2019-06-03 15:51:00 -0400
 categories: AWS ColdFusion
 ---
 

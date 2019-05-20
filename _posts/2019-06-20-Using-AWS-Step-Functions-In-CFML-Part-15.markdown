@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Using AWS Step Functions in CFML: Speaking Translated Text into a MP3 File"
-date:   2019-06-15 15:51:00 -0400
+date:   2019-06-20 15:51:00 -0400
 categories: AWS ColdFusion
 ---
 

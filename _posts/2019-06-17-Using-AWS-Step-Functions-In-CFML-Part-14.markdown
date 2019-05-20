@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Using AWS Step Functions in CFML: The Frustration of Variable Reassignment in Step Functions"
-date:   2019-06-10 15:51:00 -0400
+date:   2019-06-17 15:51:00 -0400
 categories: AWS ColdFusion
 ---
 

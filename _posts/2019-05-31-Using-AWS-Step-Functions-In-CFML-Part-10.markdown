@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Using AWS Step Functions in CFML: Error Handling and Retries in Step Functions Workflows"
-date:   2019-05-24 15:51:00 -0400
+date:   2019-05-31 15:51:00 -0400
 categories: AWS ColdFusion
 ---
 
