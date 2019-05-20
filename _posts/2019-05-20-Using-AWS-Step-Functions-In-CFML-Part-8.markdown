@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Using AWS Step Functions in CFML: Invoking and Tracking Step Function Workflows from CFML"
-date:   2019-05-16 15:51:00 -0400
+date:   2019-05-20 9:57:00 -0400
 categories: AWS ColdFusion
 ---
 
@@ -91,7 +91,7 @@ Retrieving data returned from a Step Functions execution is a simple call to des
 if (stepFunctionResult.status IS "SUCCEEDED") {
 	stepFunctionResult.finishedOn = describeActivityResult.getStopDate();
 	stepFunctionResult.output = DeserializeJSON(describeActivityResult.getOutput());
-    // Delete the this execution from the array of currently running executions in the application scope
+	// Delete the this execution from the array of currently running executions in the application scope
 	application.currentStepFunctionExecutions.each(function(element, index) {
 		if (element.executionARN IS checkStepFunctionARN) {
 			stepFunctionResult.invocationType = element.executionType;
