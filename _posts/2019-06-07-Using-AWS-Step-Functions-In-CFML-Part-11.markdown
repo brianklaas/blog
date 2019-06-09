@@ -1,13 +1,13 @@
 ---
 layout: post
 title:  "Using AWS Step Functions in CFML: Looping in Step Functions Workflows via the Wait State"
-date:   2019-06-03 15:51:00 -0400
+date:   2019-06-07 12:41:00 -0400
 categories: AWS ColdFusion
 ---
 
 At this point in the [second example Step Functions workflow](https://github.com/brianklaas/awsPlaybox/blob/master/stateMachines/transcribeTranslateSpeakWorkflow.json), we're waiting for our [AWS Transcribe](https://brianklaas.net/aws/coldfusion/2018/09/14/Using-AWS-Transcribe-in-CFML-Part-1.html) job to complete. AWS Transcribe works faster than real-time, but it's not instantaneous. If you're trying to transcribe a 90 minute podcast or 70 minute video, it's going to take more than a few minutes for Transcribe to do its work. Our workflow of translating the transcription cannot continue until this work is done.
 
-So how do we wait until an asyncrhonous task like this is done? How do we even know when it's done?
+So how do we wait until an asyncrhonous task like this is done? How do we even know when the task is done?
 
 ### Looping in Step Functions Workflows
 
@@ -50,9 +50,9 @@ The above code represents three steps:
 2. Run a Lambda function that checks the status of the Transcribe job
 3. If the status of the Transcribe job is FAILED or COMPLETED, move on to the appropriate next step. Otherwise, go with the Default state value, and return to the wait state.
 
-It's this last line that allows a loop to happen in our Step Functions workflow. If the Transcribe job isn't FAILED OR COMPLETED, we default to the Default choice, which goes back to the start of our loop (WaitForTranscriptionComplete). 
+It's this last line that allows a loop to happen in our Step Functions workflow. If the Transcribe job isn't FAILED or COMPLETED, we default to the "Default" choice, which goes back to the start of our loop (WaitForTranscriptionComplete). 
 
-> It's important to note that loops can be expensive in Step Functions Workflows. You are [charged on the number of state transitions (moving from one state in your worfklow to another) that occur](https://aws.amazon.com/step-functions/pricing/). If a Transcribe job takes ten minutes to complete, we will go through this loop 20 times, resulting in 60 separate state transitions (20 x 3 separate states). That's not too bad. If the job takes a day to complete, however, the loop will execute 2,880 times, resulting in 8,640 state transitions, which is a lot more expensive. You also need to add to that the execution cost (if any) of the task steps inside the loop. You need to balance the wait time in your wait step against the cost of unneccessarily fast loops.
+> It's important to note that loops can be expensive in Step Functions Workflows. You are [charged on the number of state transitions (moving from one state in your worfklow to another) that occur](https://aws.amazon.com/step-functions/pricing/). If a Transcribe job takes ten minutes to complete, it will go through this loop 20 times, resulting in 60 separate state transitions (20 x 3 separate states). That's not too bad. If the job takes a day to complete, however, the loop will execute 2,880 times, resulting in 8,640 state transitions, which is a lot more expensive. You also need to add to that the execution cost (if any) of the task steps inside the loop. You need to balance the wait time in your wait step against the cost of unneccessarily fast loops.
 
 ### Wait States
 
@@ -94,12 +94,14 @@ exports.handler = (event, context, callback) => {
 };
 {% endhighlight %}
 
-This Lambda function always returns a set of data about the job &mdash; including the job status &mdash; as long as it does not error out in the process. As you can see, the job name, which we defined in the first step in the workflow (startTranscribeMP4), is critical. Without the job name as created in that first step, we can't check on the job status. That's why the jobName is always passed in every step in the workflow.
+This Lambda function always returns a set of data about the job &mdash; including the job status &mdash; as long as it does not error out in the process. As you can see, the job name, which we defined in the first state in the workflow (startTranscribeMP4), is critical. Without the job name as created in that first state, we can't check on the job status. That's why the jobName is always passed in every step in the workflow.
 
 ### Retrieving the Transcript File And Moving On
 
-The getTranscriptionJob function also returns the URI of the transcript output file. Before we can start the second half of this second example workflow, we need to grab that file and store it for future use. There's are many potential uses for the full transcription of the video. Rather than getting it from the default, AWS-controlled bucket into which the transcription goes upon completion, we'll put it in a bucket of our own. (If you don't know why the transcription ends up in an AWS-controlled bucket, please see my eariler series on [working with AWS Transcribe](http://brianklaas.net/aws/coldfusion/2018/10/05/Using-AWS-Transcribe-in-CFML-Part-4.html).)
+The getTranscriptionJob function also returns the URI of the transcript output file. Before we can start the second half of this second example workflow, we need to grab that file and store it for future use. That work is done in the "Get Transcription File" state, which is where our workflow goes once the $.jobStatus value in the loop evaluates to COMPLETED.
 
-The code in [nodejs/lambda/transcribeTranslateExample/getTranscriptionFile.js](https://github.com/brianklaas/awsPlaybox/blob/master/nodejs/lambda/transcribeTranslateExample/getTranscriptionFile.js) shows how to do this. It's basically just reading the file from the AWS-controlled S3 bucket, reading the transcription file into memory, and then writing that file to our own S3 bucket. 
+There are many potential uses for the full text transcription of a video. Rather than always reading the transcript from the default, AWS-controlled bucket into which the transcription goes upon completion, we'll put it in a bucket of our own. (If you don't know why the transcription ends up in an AWS-controlled bucket, please see my eariler series on [working with AWS Transcribe](http://brianklaas.net/aws/coldfusion/2018/10/05/Using-AWS-Transcribe-in-CFML-Part-4.html).)
+
+The code in [nodejs/lambda/transcribeTranslateExample/getTranscriptionFile.js](https://github.com/brianklaas/awsPlaybox/blob/master/nodejs/lambda/transcribeTranslateExample/getTranscriptionFile.js) shows how to do this. This Lambda function reads the file from the AWS-controlled S3 bucket, putting the transcription file into memory, and then writes that file to our own S3 bucket. 
 
 This completes the first half of this workflow, which was dominated by the wait loop. The second half of the worfklow focuses on parallel tasks, and, obviously, introduces the parallel task state. That's what we'll look at next.

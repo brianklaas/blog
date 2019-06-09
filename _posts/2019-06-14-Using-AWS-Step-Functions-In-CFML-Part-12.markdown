@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Using AWS Step Functions in CFML: Speeding Workflows with Parallel States"
-date:   2019-06-07 15:51:00 -0400
+date:   2019-06-14 15:51:00 -0400
 categories: AWS ColdFusion
 ---
 
