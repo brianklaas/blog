@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Using AWS Step Functions in CFML: Translating Text into Multiple Languages"
-date:   2019-06-17 15:51:00 -0400
+date:   2019-06-28 15:51:00 -0400
 categories: AWS ColdFusion
 ---
 
