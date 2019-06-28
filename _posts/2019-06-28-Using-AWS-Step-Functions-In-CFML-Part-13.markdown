@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Using AWS Step Functions in CFML: Translating Text into Multiple Languages"
-date:   2019-06-28 15:51:00 -0400
+date:   2019-06-28 13:08:00 -0400
 categories: AWS ColdFusion
 ---
 
@@ -22,7 +22,7 @@ All that's happening in this pass state is setting the $.languageToUse variable 
 
 ### The Value of Generic Functions
 
-This state is critical, because without it, we would have to have unique Lambda functions for each target language into which we want to translate and then speak the original transcript. We could have built a "translate into Spanish" Lambda function, and a "translate into French" Lambda function, and a "translate into German" Lambda function, and so on, but that would be wasteful.
+At first glance, this state looks trivial. This state is, however, critical. Without it, we would have to have unique Lambda functions for each target language into which we want to translate and then speak the original transcript. We could have built a "translate into Spanish" Lambda function, and a "translate into French" Lambda function, and a "translate into German" Lambda function, and so on, but that would be wasteful.
 
 As always, it's important to keep your Lambda functions flexible. Instead of making a language-specific translate function, make a generic translate function, and then compose that function into other services (or steps in a Step Functions workflow). That's the strategy employed in this workflow, and you'll see it again when speaking the translated text.
 
@@ -46,9 +46,9 @@ Now that we've set the language to use, the next step in this parallel workflow 
 }
 {% endhighlight %}
 
-I already covered [AWS Translate in some depth in a previous series](https://brianklaas.net/aws/coldfusion/2018/10/21/Using-AWS-Translate-in-CFML-Part-1.html). It's an easy to use service, but you have to be aware of its [service limits](https://docs.aws.amazon.com/translate/latest/dg/limits-guidelines.html), especially when trying to translate large amounts of text.
+I already covered [AWS Translate in some depth in a previous series](https://brianklaas.net/aws/coldfusion/2018/10/21/Using-AWS-Translate-in-CFML-Part-1.html). It's an easy-to-use service, but you have to be aware of its [service limits](https://docs.aws.amazon.com/translate/latest/dg/limits-guidelines.html), especially when trying to translate large amounts of text.
 
-Those service limits are handled by the Retry block in the state definition, above. It's a whole lot easier to let the Step Functions execution environment to handle retries and backoff than trying to write all of that in my Lambda function code!
+Those service limits are handled by the Retry block in the state definition, above. It's a whole lot easier to let the Step Functions execution environment handle retries and backoff than trying to write all of that in my Lambda function code!
 
 The [code for the translateText Lambda function](https://github.com/brianklaas/awsPlaybox/blob/master/nodejs/lambda/transcribeTranslateExample/translateText.js) starts with retrieval of the translated, English text file which we stored in our own S3 bucket earlier in this series. Once the Promise for that function is resolved, we then go on to the translateText function, which is shown below:
 
@@ -60,7 +60,6 @@ function translateText(textToTranslate, languageToUse) {
         var trimmedString = textToTranslate.substr(0, maxLength);
         // We don't want to pass in words that are cut off in the middle
         trimmedString = trimmedString.substr(0, Math.min(trimmedString.length, trimmedString.lastIndexOf(" ")));
-        console.log("We're going to translate:\n", trimmedString);
         var params = {
             SourceLanguageCode: 'en',
             TargetLanguageCode: languageToUse,
