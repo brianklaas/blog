@@ -1,13 +1,13 @@
 ---
 layout: post
 title:  "Using AWS Step Functions in CFML: The Frustration of Variable Reassignment in Step Functions"
-date:   2019-07-05 15:51:00 -0400
+date:   2019-07-08 09:15:00 -0400
 categories: AWS ColdFusion
 ---
 
-As mentioned at the end of the last post in this series, if we try to take our translated text and pass it directly into the next (and final) step in this parallel execution, it won't quite work. We would get an error that the textToSpeak property wasn't defined in the event object. Why?
+As mentioned at the end of [the last post in this series](https://brianklaas.net/aws/coldfusion/2019/06/28/Using-AWS-Step-Functions-In-CFML-Part-13.html), if we try to take our translated text and pass it directly into the next (and final) step in this parallel execution, it won't quite work. We would get an error that the textToSpeak property wasn't defined in the event object. Why?
 
-I'm not going to show the code for the convertTextToSpeech.js function quite yet, but it expects three properties to exist in the event argument passed to that Lambda function:
+I'm not going to show the code for the convertTextToSpeech.js function just yet, but it expects three properties to exist in the event argument passed to that Lambda function:
 
 - textToSpeak
 - languageToSpeak
@@ -61,6 +61,6 @@ exports.handler = (event, context, callback) => {
 
 Again, all we are doing in this function is reassigning variable names because we can't do that in our Step Functions workflow JSON.
 
-You may be asking: "why not just name the translatedText property of the translateText function textToSpeak? You could have avoided this whole intermediate step." I hope you can see from that very question the issue with naming the property textToSpeak. We're not *speaking* text in that function, we're *translating* text. I might want to use the translateText function for any number of other purposes. Having a property of the translateText output object named "textToSpeak" simply wouldn't make logical sense to other developers using that function. By keeping the input variables appropriate to the purpose of the function, I create something that is re-usable by many Step Functions workflows or other applications.
+You may be asking: "why not just name the 'translatedText' property of the translateText function 'textToSpeak'? You could have avoided this whole intermediate step." I hope you can see from that very question the issue with naming the property textToSpeak. We're not *speaking* text in that function, we're *translating* text. I might want to use the translateText function for any number of other purposes. Having a property of the translateText output object named "textToSpeak" simply wouldn't make logical sense to other developers using that function. By keeping the input variables appropriate to the purpose of the function, I create something that is re-usable by many Step Functions workflows or other applications.
 
-So now we have our translated text, properly assigned to the expected variable names for the next, and final step in our workflow. The next post will cover the process of taking that text and "speaking" it into an MP3 file.
+So now we have our translated text, properly assigned to the expected variable names for the next, and final, step in our workflow. The next post will cover the process of taking that text and "speaking" it into an MP3 file.
