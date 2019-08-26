@@ -1,13 +1,13 @@
 ---
 layout: post
 title:  "Start and Stop the ColdFusion 2018 Performance Monitoring Toolset from Anywhere in the Mac OS Terminal"
-date:   2019-08-23 15:54:00 -0400
+date:   2019-08-26 7:34:00 -0400
 categories: ColdFusion
 ---
 
 Once of the really nice additions to ColdFusion 2018 is the [Performance Monitoring Toolset](https://helpx.adobe.com/coldfusion/performance-monitoring-toolset/overview-coldfusion-performance-monitoring-toolset.html). This is a very robust tool which helps you see directly inside the black box that the Adobe ColdFusion runtime can sometimes be. 
 
-I develop on the MacOS, and after a restart of my machine, I have to also restart the Performance Monitoring Toolset. The toolset executable on the MacOS is normally located at /Applications/ColdFusion2018PerformanceMonitoringToolset/bin/. Rather than having to change directories to this directory each and every time I need to start or stop the Performance Monitoring Toolset, I'd like to simply say "Start the Performance Monitoring Toolset" no matter where I am in the terminal.
+I develop on the MacOS, and any time I restart my machine, I have to also restart the Performance Monitoring Toolset. The toolset executable on the MacOS is located at /Applications/ColdFusion2018PerformanceMonitoringToolset/bin/ by default. Rather than having to change directories to this directory each and every time I need to start or stop the Performance Monitoring Toolset, I'd like to simply say "Start the Performance Monitoring Toolset" no matter where I am in the terminal.
 
 [I wrote about how to do this for your ColdFusion application server](https://brianklaas.net/coldfusion/2013/10/07/Start-and-Stop-the-ColdFusion-Server-from-Anywhere-in-the-Mac-OS-Terminal.html) a couple of years ago, and the same principle applies for the Performance Monitoring Toolset.
 
