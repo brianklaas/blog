@@ -7,3 +7,8 @@ https://stackoverflow.com/questions/50382666/trouble-trying-to-use-amazon-transc
 Example of external activity in Step Functions workflow
 
 https://docs.aws.amazon.com/step-functions/latest/dg/tutorial-creating-activity-state-machine.html
+
+
+Step Functions Async Callbacks with Tokens
+https://medium.com/@zaccharles/async-callbacks-with-aws-step-functions-and-task-tokens-9df97fe8973c
+Show how to do from within CFML
