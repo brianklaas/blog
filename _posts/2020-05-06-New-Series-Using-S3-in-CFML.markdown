@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "New Series: Going Beyond the Basics of Using AWS S3 in CFML"
-date:   2020-05-04 09:47:00 -0400
+date:   2020-05-06 08:57:00 -0400
 categories: AWS ColdFusion
 ---
 
