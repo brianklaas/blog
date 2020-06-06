@@ -1,19 +1,19 @@
 ---
 layout: post
 title:  "Beyond the Basics of Using AWS S3 in CFML: Use Different Storage Classes to Save Money"
-date:   2020-06-02 10:48:00 -0400
+date:   2020-06-02 12:48:00 -0400
 categories: AWS ColdFusion
 ---
 
-S3 offers a rediculous level of durability for the objects stored in the service. On top of [11 9's of durability](https://wasabi.com/blog/11-nines-durability/) in physically distributed storage, Amazon has developed formal proof-of-correctness algorithms that map across all the systems that S3 interacts with to ensure that data is always correct when requested. They create checksums across loosely-coupled systems (including checking for bitslips in RAM) to ensure transfers never become corrupt, and use complex actuarial models that anticipate when drives will fail. AWS has automated “durability auditors” that repeatedly crawl every byte of S3 data to verify that when you retrieve your stuff, it will be correct. This is incredibly powerful, _difficult_ stuff to achieve. There's a [fascinating video from re:Invent 2018](youtube.com/watch?v=nLyppihvhpQ) if you want to learn more about the way in wihch S3 is built.
+S3 offers a rediculous level of durability for the objects stored in the service. On top of [11 9's of durability](https://wasabi.com/blog/11-nines-durability/) in physically distributed storage, Amazon has developed formal proof-of-correctness algorithms that map across all the systems with which S3 interacts to ensure that data is always correct when requested. They create checksums across loosely-coupled systems (including checking for bitslips in RAM) to ensure transfers never become corrupt, and use complex actuarial models that anticipate when the hard drives on which data is actually stored will fail. AWS has automated “durability auditors” that repeatedly crawl every byte of S3 data to verify that when you retrieve your stuff, it will be correct. This is incredibly powerful, _difficult_ stuff to achieve. There's a [fascinating video from re:Invent 2018](youtube.com/watch?v=nLyppihvhpQ) if you want to learn more about the way in which S3 is built.
 
-The upshot of all this work is that you really will never lose files stored in S3. The default way in which files are stored in S3 causes them to replicated in triplicate across at least three availability zones in a geographic AWS region. Even if one data center physically blows up, you won't lose your data. As this is S3's storage default, this is the way in which all files using CFML's built-in file functions will be stored in S3. This is also the most expensive way to store files in S3.
+The upshot of all this work is that you simply won't lose files stored in S3. The default way in which files are stored in S3 causes them to replicated across at least three availability zones in a single geographic AWS region. Even if one data center physically blows up, you won't lose your data. As this is S3's storage default, this is the way in which all files using CFML's built-in file functions will be stored in S3. This is also the most expensive way to store files in S3.
 
 ## Storage Classes and Saving Money
 
-S3 isn't expensive, but there are ways to save even more money on storage when you put files in S3. There are a number of different storage classes, and putting files into lower-cost storage classes is a great way to save a lot of money when your total S3 storage starts moving into the hundreds or thousands of terrabytes. 
+S3 isn't expensive, but there are ways to save money on storage when you put files in S3. There are a number of different storage classes, and putting files into lower-cost storage classes is a great way to save a lot of money when your total S3 storage starts moving into the terrabyte range. 
 
-[Storage classes and pricing can be found on the AWS site](https://aws.amazon.com/s3/pricing/). Here's a brief rundown of the different storage classes, with prices current as of May, 2020:
+[Storage classes and pricing can be found on the AWS site](https://aws.amazon.com/s3/pricing/). Here's a brief rundown of the different storage classes, with prices current as of June, 2020:
 
 - Standard (starting at $0.023 per GB): sub-10ms response time, replicated across three availability zones in a region
 - Infrequent Access ($0.0125 per GB): sub-second response time, replicated across three availability zones in a region
@@ -24,7 +24,7 @@ S3 isn't expensive, but there are ways to save even more money on storage when y
 
 As you can see, you can save almost 50% per month on storage if you put files in the Infrequent Access storage class. You can't do this with the built-in CFML functions, though. You have to use the AWS Java SDK. This may not be the best option for highly accessed files, but how often do customer files get accessed in your web apps if you're not Facebook or TikTok?
 
-It's important to note that there is no savings for storing files smaller than 128KB in Infrequent Access or S3 One Zone - Infrequent Access. You also cannot make a synchronous request to get a file in Glacier. You'll get a response token back when you want to pull a file from glacier. At some point in the next 12 hours, S3 will grab the file and put it in temporary storage for return to you.
+It's important to note that there is no savings for storing files smaller than 128KB in Infrequent Access or S3 One Zone - Infrequent Access. At scale, GET requests to Infrequent Access storage are more expensive than GET requests for standard storage. You also cannot make a synchronous request to get a file in Glacier. You'll get a response token back when you want to pull a file from Glacier. At some point in the next 12 hours, S3 will grab the file from Glacier and put it in temporary storage for return to you. These are all important considerations when you look at cost differences across storage classes.
 
 ## Storing Files with Different Storage Classes in CFML
 
@@ -34,10 +34,10 @@ So how do you store files with a non-standard storage class when you put them in
     s3 = application.awsServiceFactory.createServiceObject('s3');
     fileContent = fileReadBinary(getTempDirectory() & uploadedFile.serverFile);
     javaFileObject = CreateObject('java', 'java.io.File').init(fileLocation);
-    putFileRequest = CreateObject('java', ‘com.amazonaws.services.s3.model.PutObjectRequest’)
+    putFileRequest = CreateObject('java', 'com.amazonaws.services.s3.model.PutObjectRequest')
         .init(s3BucketName, fileName, javaFileObject);
     // The storage class property of the PutObjectRequest tells S3 to use a non-standard storage class
-    storageClassObj = CreateObject('java', ‘com.amazonaws.services.s3.model.StorageClass');
+    storageClassObj = CreateObject('java', 'com.amazonaws.services.s3.model.StorageClass');
     putFileRequest.setStorageClass(storageClassObj.valueOf("StandardInfrequentAccess"));
     s3.putObject(putFileRequest);
 {% endhighlight %}
