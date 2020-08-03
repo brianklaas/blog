@@ -1,11 +1,11 @@
 ---
 layout: post
 title:  "Beyond the Basics of Using AWS S3 in CFML: Editing Tags and Using S3 Object Metadata"
-date:   2020-07-31 10:01:00 -0400
+date:   2020-08-03 9:55:00 -0400
 categories: AWS ColdFusion
 ---
 
-In [the last post in this series](), we looked at how to add tags to an object uploaded to S3 via the AWS Java SDK. What if you need to change those tags? Are tags the _only_ way to add metadata to objects in S3? Let's file out.
+In [the last post in this series](https://brianklaas.net/aws/coldfusion/2020/07/27/Beyond-Basics-S3-Tags.html), we looked at how to add tags to an object uploaded to S3 via the AWS Java SDK. What if you need to change those tags? Are tags the _only_ way to add metadata to objects in S3? Let's file out.
 
 ## Updating Object Tags in S3
 
