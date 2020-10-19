@@ -17,9 +17,9 @@ Here's the definition of the task state:
     "Retry": [
         {
           "ErrorEquals": [ "States.ALL" ],
-          "IntervalSeconds": 30,
+          "IntervalSeconds": 10,
           "MaxAttempts": 3,
-          "BackoffRate": 10
+          "BackoffRate": 3
         }
     ]
 }
@@ -80,9 +80,9 @@ The new and interesting part of the startTranscribeMP4 task definition code is t
 "Retry": [
     {
         "ErrorEquals": [ "States.ALL" ],
-        "IntervalSeconds": 30,
+        "IntervalSeconds": 10,
         "MaxAttempts": 3,
-        "BackoffRate": 10
+        "BackoffRate": 3
     }
 ]
 {% endhighlight %}
@@ -91,7 +91,7 @@ Retries are a powerful construct in Step Functions workflows, and should be incl
 
 Nearly all AWS services have limits on one or more aspects of the service. Lambda, for example, has a [limit of 1,000 concurrent Lambda executions](https://docs.aws.amazon.com/lambda/latest/dg/limits.html) in any AWS account. Any single invocation also cannot run for longer than 15 minutes. Transcribe has a [limit of 10 invocations per second on the StartTranscriptionJob function](https://docs.aws.amazon.com/general/latest/gr/aws_service_limits.html#limits-amazon-transcribe) and an overall limit of 100 concurrent transcription jobs per account. Translate will not translate requests that are [longer than 5,000 bytes in size](https://docs.aws.amazon.com/translate/latest/dg/limits-guidelines.html). Polly's SynthesizeSpeech operation has a [limit of 3000 characters per operation](https://docs.aws.amazon.com/polly/latest/dg/limits.html).
 
-All of these limits must be handled in any code we write that uses these servcies. This means keeping track of simultaneous executions, or chunking text into separate blocks for translation or speech. If you do happen to reach a service limit, or your requests get throttled by AWS because of internal load on the service, you probably don't want your whole workflow to error out. You want to be able to try things again, in the hopes that service capacity has eased or limits have been reset due to the passage of time.
+All of these limits must be handled in any code we write that uses these services. This means keeping track of simultaneous executions, or chunking text into separate blocks for translation or speech. If you do happen to reach a service limit, or your requests get throttled by AWS because of internal load on the service, you probably don't want your whole workflow to error out. You want to be able to try things again, in the hopes that service capacity has eased or limits have been reset due to the passage of time.
 
 You could write all of the if-then-else, switching, branching, and tracking code to handle this yourself. You could store state in DynamoDB every step of the way to see what specific task failed and where, how many retries you have attempted, how many retries you have left, and so on. You could add hundreds (or thousands) of lines of code to your workflow to handle this.
 
@@ -105,7 +105,7 @@ Not having to write all that error handling code ourselves is *very* handy. Step
 
 - *MaxAttempts* defines the number of attempts Step Functions will make retrying the startTranscribeJob Lambda function before it (and the entire workflow) errors out.
 
-- *BackoffRate* is the number of seconds Step Functions will add to each IntervalSeconds on each subsequent retry beyond the first. This means that Step Functions will wait 30 seconds before the first retry, 40 seconds before the second, and 50 seconds before the third. Including service call backoff (and, specifically, [exponential backoff](https://en.wikipedia.org/wiki/Exponential_backoff)) is a best practice when designing resilient systems.
+- *BackoffRate* is the multiplier by which the retry interval increases during each attempt. This means that Step Functions will wait 10 seconds before the first retry, 30 seconds before the second, and 90 seconds before the third. Including service call backoff (and, specifically, [exponential backoff](https://en.wikipedia.org/wiki/Exponential_backoff)) is a best practice when designing resilient systems.
 
 Instead of writing hundreds of lines of code to handle all of the above, Step Functions allows for all of this functionality in three short lines of JSON. 
 
